@@ -20,26 +20,14 @@ In your HTML:
 
 
 ```js
-iia.start(function(err) {
-  if (err) {
-    // error
-  } else {
-    // started ok
-  }
-})
+iia.start([callback])
 ```
 
 ### stop
 
 
 ```js
-iia.stop(function(err) {
-  if (err) {
-    // error
-  } else {
-    // stopped ok
-  }
-})
+iia.stop([callback])
 ```
 
 
