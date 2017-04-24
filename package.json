@@ -2,9 +2,12 @@
   "name": "ipfs-iiif-annotations",
   "version": "0.0.1",
   "description": "IIIF annotations JS client over IPFS",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "aegir-lint",
+    "build": "aegir-build",
+    "test": "npm run test:node",
+    "test:node": "mocha"
   },
   "repository": {
     "type": "git",
@@ -20,5 +23,18 @@
   "bugs": {
     "url": "https://github.com/pgte/ipfs-iiif-annotations/issues"
   },
-  "homepage": "https://github.com/pgte/ipfs-iiif-annotations#readme"
+  "homepage": "https://github.com/pgte/ipfs-iiif-annotations#readme",
+  "dependencies": {
+    "ipfs": "^0.23.1"
+  },
+  "devDependencies": {
+    "aegir": "^11.0.1",
+    "chai": "^3.5.0",
+    "dirty-chai": "^1.2.2",
+    "pre-commit": "^1.2.2"
+  },
+  "pre-commit": [
+    "lint",
+    "test"
+  ]
 }
