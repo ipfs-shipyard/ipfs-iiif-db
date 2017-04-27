@@ -2,10 +2,12 @@
 
 const start = require('./start')
 const producer = require('./producer')
+const consumer = require('./consumer')
 
 exports.start = _start
 exports.stop = _stop
 exports.producer = _producer
+exports.consumer = _consumer
 
 let ipfs
 
@@ -34,4 +36,8 @@ function _stop (callback) {
 
 function _producer () {
   return producer(ipfs)
+}
+
+function _consumer () {
+  return consumer(ipfs)
 }

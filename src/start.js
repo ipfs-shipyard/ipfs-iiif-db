@@ -1,6 +1,7 @@
 'use strict'
 
 const IPFS = require('ipfs')
+const localStore = require('./local-store')
 
 module.exports = function start (_callback) {
   const options = {
@@ -11,6 +12,9 @@ module.exports = function start (_callback) {
           '/libp2p-webrtc-star/dns4/star-signal.cloud.ipfs.team/wss'
         ]
       }
+    },
+    EXPERIMENTAL: {
+      pubsub: true
     }
   }
 
@@ -27,7 +31,7 @@ module.exports = function start (_callback) {
   }
 
   function onReady () {
-    callback()
+    localStore.start(callback)
   }
 }
 

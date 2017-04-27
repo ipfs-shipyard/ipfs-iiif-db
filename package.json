@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/pgte/ipfs-iiif-annotations#readme",
   "dependencies": {
+    "async": "^2.3.0",
     "ipfs": "^0.23.1"
   },
   "devDependencies": {

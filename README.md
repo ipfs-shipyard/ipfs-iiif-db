@@ -23,6 +23,15 @@ In your HTML:
 iia.start([callback])
 ```
 
+### change a value
+
+```js
+iiia.put(id, value, callback)
+```
+
+The id needs to be a string, but the value can be any JS object that can be represented in JSON.
+
+
 ### stop
 
 
