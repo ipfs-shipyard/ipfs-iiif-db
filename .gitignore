@@ -6,3 +6,7 @@ node_modules
 
 # Distribution dir
 dist
+
+# Temp dir
+temp
+

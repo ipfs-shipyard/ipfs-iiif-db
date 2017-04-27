@@ -16,6 +16,8 @@ function _start (_callback) {
   }
 
   ipfs = start(_callback)
+
+  return ipfs
 }
 
 function _stop (callback) {

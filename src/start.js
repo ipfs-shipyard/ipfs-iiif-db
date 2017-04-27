@@ -32,5 +32,5 @@ module.exports = function start (_callback) {
 }
 
 function repoPath () {
-  return 'ipfs-' + Math.random()
+  return 'temp/ipfs-' + Math.random()
 }
