@@ -23,13 +23,41 @@ In your HTML:
 iia.start([callback])
 ```
 
-### change a value
+### create a producer
 
 ```js
-iiia.put(id, value, callback)
+const producer = iiia.producer()
+```
+
+#### produce a change
+
+```js
+producer.put(id, value, callback)
 ```
 
 The id needs to be a string, but the value can be any JS object that can be represented in JSON.
+
+### create a consumer
+
+```js
+const consumer = iiia.consumer()
+```
+
+#### Listen for changes
+
+```js
+const subscription = consumer.onChange(id, (newValue) => {
+  console.log('new value is: %j', newValue)
+})
+```
+
+#### Cancel subscription
+
+The consumer `onChange` function returns a subscription object that you can cancel:
+
+```js
+subscription.cancel()
+```
 
 
 ### stop
