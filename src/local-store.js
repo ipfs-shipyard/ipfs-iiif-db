@@ -14,3 +14,7 @@ exports.setHead = (id, hash, callback) => {
   heads[id] = hash
   setImmediate(callback)
 }
+
+exports.topics = () => Object.keys(heads)
+
+exports.headForTopic = (topic) => heads[topic]

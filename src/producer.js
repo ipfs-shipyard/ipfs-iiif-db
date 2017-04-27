@@ -1,10 +1,15 @@
 'use strict'
 
 const waterfall = require('async/waterfall')
+const eachSeries = require('async/eachSeries')
 const topicName = require('./topic-name')
 const localStore = require('./local-store')
+const Peers = require('./peers')
 
 module.exports = (ipfs) => {
+  const peers = Peers(ipfs)
+  peers.on('change', onPeersChange)
+
   return {
     put: put
   }
@@ -39,5 +44,24 @@ module.exports = (ipfs) => {
       ],
       callback
     )
+  }
+
+  function onPeersChange () {
+    console.log('peers changed')
+    localStore.topics((err, topics) => {
+      if (err) {
+        throw err
+      }
+      eachSeries(
+        topics,
+        (topic, callback) => {
+          ipfs.pubsub.publish(topic, localStore.headForTopic(topic), callback)
+        },
+        (err) => {
+          if (err) {
+            throw err
+          }
+        })
+    })
   }
 }

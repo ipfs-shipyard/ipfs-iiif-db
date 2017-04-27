@@ -1,13 +1,15 @@
 /* eslint-env mocha */
 'use strict'
 
-// const chai = require('chai')
-// chai.use(require('dirty-chai'))
-// const expect = chai.expect
-
-const iia = require('../')
+const IpfsIiifAnnotations = require('../')
 
 describe('start and stop', () => {
+  let iia
+
+  before(() => {
+    iia = IpfsIiifAnnotations()
+  })
+
   it('starts', (done) => {
     iia.start(done)
   })

@@ -5,18 +5,30 @@ const chai = require('chai')
 chai.use(require('dirty-chai'))
 const expect = chai.expect
 
-const iia = require('../')
+const IpfsIiifAnnotations = require('../')
 
 describe('produce and consume', () => {
+  let iiaProducer, iiaConsumer
   let producer
   let consumer
   let subscription
 
-  before((done) => iia.start(done))
-  after((done) => iia.stop(done))
+  before(() => {
+    iiaProducer = IpfsIiifAnnotations()
+  })
+
+  before((done) => iiaProducer.start(done))
+  after((done) => iiaProducer.stop(done))
+  after((done) => {
+    if (iiaConsumer) {
+      iiaConsumer.stop(done)
+    } else {
+      done()
+    }
+  })
 
   it('can create a producer', (done) => {
-    producer = iia.producer()
+    producer = iiaProducer.producer()
     done()
   })
 
@@ -24,8 +36,13 @@ describe('produce and consume', () => {
     producer.put('name', 'value', done)
   })
 
-  it('can create a consumer', (done) => {
-    consumer = iia.consumer()
+  it('can start a consumer node', (done) => {
+    iiaConsumer = IpfsIiifAnnotations()
+    iiaConsumer.start(done)
+  })
+
+  it('can start a consumer', (done) => {
+    consumer = iiaConsumer.consumer()
     done()
   })
 
