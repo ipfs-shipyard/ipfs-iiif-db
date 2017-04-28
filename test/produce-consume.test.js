@@ -67,7 +67,7 @@ describe('produce and consume', () => {
     })
   }).timeout(5000)
 
-  it.skip('consumer can cancel subscription', (done) => {
+  it('consumer can cancel subscription', (done) => {
     subscription.cancel()
     done()
   })
