@@ -18,7 +18,18 @@ module.exports = (ipfs) => {
     }
 
     function handler (message) {
-      fn(JSON.parse(message.data.toString()))
+      ipfs.object.get(message.data, (err, object) => {
+        if (err) {
+          console.error('error getting IPFS object', err)
+          return // early
+        }
+        const message = JSON.parse(object.data.toString())
+        if (message.name !== id) {
+          console.error('expected name to be ' + id + ' and was ' + message.name)
+          return // early
+        }
+        fn(message.value)
+      })
     }
 
     function cancel () {
@@ -27,7 +38,7 @@ module.exports = (ipfs) => {
       }
       active = false
       try {
-        ipfs.pubsub.unsubscribe(topic, handler)
+        setTimeout(() => ipfs.pubsub.unsubscribe(topic, handler), 1000)
       } catch (e) {
         if (!e.message.match('FloodSub is not started')) {
           throw e

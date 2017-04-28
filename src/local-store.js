@@ -15,6 +15,15 @@ exports.setHead = (id, hash, callback) => {
   setImmediate(callback)
 }
 
-exports.topics = () => Object.keys(heads)
+exports.topics = (callback) => {
+  // fix
+  setImmediate(() => {
+    callback(null, Object.keys(heads))
+  })
+}
 
-exports.headForTopic = (topic) => heads[topic]
+exports.headForTopic = (topic, callback) => {
+  setImmediate(() => {
+    callback(null, heads[topic])
+  })
+}

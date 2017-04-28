@@ -11,7 +11,8 @@ module.exports = () => {
     start: _start,
     stop: _stop,
     producer: _producer,
-    consumer: _consumer
+    consumer: _consumer,
+    id: _id
   }
 
   function _start (_callback) {
@@ -23,6 +24,20 @@ module.exports = () => {
     ipfs = start(_callback)
 
     return ipfs
+  }
+
+  function _id (callback) {
+    if (!ipfs) {
+      callback(new Error('IPFS not started'))
+      return // early
+    }
+    return ipfs.id((err, reply) => {
+      if (err) {
+        callback(err)
+      } else {
+        callback(null, reply.id)
+      }
+    })
   }
 
   function _stop (callback) {

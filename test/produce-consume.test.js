@@ -27,6 +27,13 @@ describe('produce and consume', () => {
     }
   })
 
+  it('can get the producer id', (done) => {
+    producer = iiaProducer.id((err, id) => {
+      expect(err).to.not.exist()
+      done()
+    })
+  })
+
   it('can create a producer', (done) => {
     producer = iiaProducer.producer()
     done()
@@ -41,17 +48,24 @@ describe('produce and consume', () => {
     iiaConsumer.start(done)
   })
 
+  it('can get id of the consumer node', (done) => {
+    iiaConsumer.id((err, id) => {
+      expect(err).to.not.exist()
+      done()
+    })
+  })
+
   it('can start a consumer', (done) => {
     consumer = iiaConsumer.consumer()
     done()
   })
 
-  it.skip('consumer can subscribe to name', (done) => {
-    subscription = consumer.onChange(value => {
+  it('consumer can subscribe to name', (done) => {
+    subscription = consumer.onChange('name', value => {
       expect(value).to.equal('value')
       done()
     })
-  })
+  }).timeout(5000)
 
   it.skip('consumer can cancel subscription', (done) => {
     subscription.cancel()

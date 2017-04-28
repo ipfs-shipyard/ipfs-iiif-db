@@ -6,9 +6,11 @@ const topicName = require('./topic-name')
 const localStore = require('./local-store')
 const Peers = require('./peers')
 
+const PUB_SUB_DELAY = 3000
+
 module.exports = (ipfs) => {
   const peers = Peers(ipfs)
-  peers.on('change', onPeersChange)
+  peers.on('changed', onPeersChange)
 
   return {
     put: put
@@ -47,21 +49,29 @@ module.exports = (ipfs) => {
   }
 
   function onPeersChange () {
-    console.log('peers changed')
     localStore.topics((err, topics) => {
       if (err) {
-        throw err
+        console.error('peer poller: error getting topics', err)
+        return // early
       }
       eachSeries(
         topics,
         (topic, callback) => {
-          ipfs.pubsub.publish(topic, localStore.headForTopic(topic), callback)
+          localStore.headForTopic(topic, (err, head) => {
+            if (err) {
+              callback(err)
+            } else {
+              // fix: do I really need a delay?
+              setTimeout(() => ipfs.pubsub.publish(topic, head, callback), PUB_SUB_DELAY)
+            }
+          })
         },
         (err) => {
           if (err) {
-            throw err
+            console.error('peer poller: error head for topics', err)
           }
-        })
+        }
+      )
     })
   }
 }
