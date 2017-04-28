@@ -7,7 +7,7 @@
 ## Install
 
 ```sh
-$ npm install ipfs-iiif-db
+$ npm install ipfs-iiif-db --save
 ```
 
 ## Import
