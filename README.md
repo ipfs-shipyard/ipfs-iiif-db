@@ -6,6 +6,8 @@
 
 ## Install
 
+TBD
+
 ## Include
 
 In your HTML:
@@ -15,6 +17,12 @@ In your HTML:
 ```
 
 ## Use
+
+### instantiate
+
+```js
+iia = TBD()
+```
 
 ### start
 
