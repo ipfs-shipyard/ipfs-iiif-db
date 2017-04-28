@@ -3,9 +3,11 @@
 const start = require('./start')
 const Producer = require('./producer')
 const Consumer = require('./consumer')
+const LocalStore = require('./local-store')
 
 module.exports = () => {
   let ipfs, producer, consumer
+  const store = LocalStore()
 
   return {
     start: _start,
@@ -22,14 +24,14 @@ module.exports = () => {
       return // early
     }
 
-    ipfs = start((err) => {
+    ipfs = start(store, (err) => {
       if (err) {
         callback(err)
         return // early
       }
 
-      producer = Producer(ipfs)
-      consumer = Consumer(ipfs)
+      producer = Producer(store, ipfs)
+      consumer = Consumer(store, ipfs)
       callback()
     })
 

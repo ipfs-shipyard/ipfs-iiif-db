@@ -2,28 +2,37 @@
 
 const setImmediate = require('async/setImmediate')
 
-// TODO: persist heads
+module.exports = () => {
+  // TODO: persist heads
 
-const heads = {}
+  const heads = {}
 
-exports.start = (callback) => {
-  setImmediate(callback)
-}
+  return {
+    start: start,
+    setHead: setHead,
+    topics: topics,
+    headForTopic: headForTopic
+  }
 
-exports.setHead = (id, hash, callback) => {
-  heads[id] = hash
-  setImmediate(callback)
-}
+  function start (callback) {
+    setImmediate(callback)
+  }
 
-exports.topics = (callback) => {
-  // fix
-  setImmediate(() => {
-    callback(null, Object.keys(heads))
-  })
-}
+  function setHead (id, hash, callback) {
+    heads[id] = hash
+    setImmediate(callback)
+  }
 
-exports.headForTopic = (topic, callback) => {
-  setImmediate(() => {
-    callback(null, heads[topic])
-  })
+  function topics (callback) {
+    // fix
+    setImmediate(() => {
+      callback(null, Object.keys(heads))
+    })
+  }
+
+  function headForTopic (topic, callback) {
+    setImmediate(() => {
+      callback(null, heads[topic])
+    })
+  }
 }

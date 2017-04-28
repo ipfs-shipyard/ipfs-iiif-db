@@ -1,9 +1,8 @@
 'use strict'
 
 const IPFS = require('ipfs')
-const localStore = require('./local-store')
 
-module.exports = function start (_callback) {
+module.exports = function start (store, _callback) {
   const options = {
     repo: repoPath(),
     config: {
@@ -31,7 +30,7 @@ module.exports = function start (_callback) {
   }
 
   function onReady () {
-    localStore.start(callback)
+    store.start(callback)
   }
 }
 

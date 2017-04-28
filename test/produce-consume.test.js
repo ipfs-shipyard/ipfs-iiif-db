@@ -40,7 +40,7 @@ describe('produce and consume', () => {
   it('can start a consumer node', (done) => {
     consumer = DB()
     consumer.start(done)
-  })
+  }).timeout(5000)
 
   it('can get id of the consumer node', (done) => {
     consumer.id((err, id) => {
@@ -50,21 +50,24 @@ describe('produce and consume', () => {
   })
 
   it('consumer can get a name', (done) => {
-    consumer.get('name', value => {
+    consumer.get('name', (err, value) => {
+      expect(err).to.not.exist()
       expect(value).to.equal('value')
       done()
     })
-  }).timeout(5000)
+  }).timeout(10000)
 
   it('consumer can get a change on a name', (done) => {
     subscription = consumer.onChange('name', value => {
       expect(value).to.equal('value 2')
       done()
     })
-    producer.put('name', 'value 2', (err) => {
-      expect(err).to.not.exist()
-    })
-  }).timeout(5000)
+    setTimeout(() => {
+      producer.put('name', 'value 2', (err) => {
+        expect(err).to.not.exist()
+      })
+    }, 1000)
+  }).timeout(10000)
 
   it('consumer can cancel subscription', (done) => {
     subscription.cancel()

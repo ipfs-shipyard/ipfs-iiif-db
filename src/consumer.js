@@ -2,7 +2,7 @@
 
 const topicName = require('./topic-name')
 
-module.exports = (ipfs) => {
+module.exports = (store, ipfs) => {
   return {
     get: get,
     onChange: onChange
@@ -10,11 +10,23 @@ module.exports = (ipfs) => {
 
   function get (id, callback) {
     let replied = false
-    const sub = onChange(id, (err, result) => {
-      if (!replied) {
-        replied = true
-        sub.cancel()
-        callback(err, result)
+    const topic = topicName(id)
+    store.headForTopic(topic, (err, head) => {
+      if (err) {
+        callback(err)
+        return // early
+      }
+
+      if (!head) {
+        const sub = onChange(id, (result) => {
+          if (!replied) {
+            replied = true
+            sub.cancel()
+            callback(null, result)
+          }
+        })
+      } else {
+        getFromHead(head, id, callback)
       }
     })
   }
@@ -22,6 +34,8 @@ module.exports = (ipfs) => {
   function onChange (id, fn) {
     let active = true
     const topic = topicName(id)
+    // const subscription = ensureSubscription(topic)
+
     ipfs.once('stop', cancel)
     ipfs.pubsub.subscribe(topic, handler)
 
@@ -30,17 +44,31 @@ module.exports = (ipfs) => {
     }
 
     function handler (message) {
-      ipfs.object.get(message.data, (err, object) => {
+      const head = message.data
+      store.headForTopic(topic, (err, previousHead) => {
         if (err) {
-          console.error('error getting IPFS object', err)
+          throw err
+        }
+
+        // TODO: make this causal
+        if (previousHead && previousHead.equals(head)) {
           return // early
         }
-        const message = JSON.parse(object.data.toString())
-        if (message.name !== id) {
-          console.error('expected name to be ' + id + ' and was ' + message.name)
-          return // early
-        }
-        fn(message.value)
+
+        store.setHead(topic, head, (err) => {
+          // todo: handle error
+          if (err) {
+            throw err
+          }
+
+          getFromHead(head, id, (err, obj) => {
+            // todo: handle error
+            if (err) {
+              throw err
+            }
+            fn(obj)
+          })
+        })
       })
     }
 
@@ -58,4 +86,27 @@ module.exports = (ipfs) => {
       }
     }
   }
+
+  function getFromHead (head, name, callback) {
+    ipfs.object.get(head, (err, object) => {
+      if (err) {
+        callback(err)
+        return // early
+      }
+      const message = JSON.parse(object.data.toString())
+      if (message.name !== name) {
+        callback(new Error('expected name to be ' + name + ' and was ' + message.name))
+        return // early
+      }
+      callback(null, message.value)
+    })
+  }
+
+  // function ensureSubscription (topic) {
+  //   let subs = subscriptions[topic]
+  //   if (!subs) {
+  //     subs = subscriptions[topic] = Subscription(ipfs, topic)
+  //   }
+  //   return subs
+  // }
 }

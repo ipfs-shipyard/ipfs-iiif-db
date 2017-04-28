@@ -2,13 +2,11 @@
 
 const waterfall = require('async/waterfall')
 const eachSeries = require('async/eachSeries')
+const each = require('async/each')
 const topicName = require('./topic-name')
-const localStore = require('./local-store')
 const Peers = require('./peers')
 
-const PUB_SUB_DELAY = 3000
-
-module.exports = (ipfs) => {
+module.exports = (store, ipfs) => {
   const peers = Peers(ipfs)
   peers.on('changed', onPeersChange)
 
@@ -35,7 +33,7 @@ module.exports = (ipfs) => {
 
         (node, callback) => {
           const mh = node.multihash
-          localStore.setHead(topic, mh, (err) => {
+          store.setHead(topic, mh, (err) => {
             callback(err, mh)
           })
         },
@@ -49,7 +47,7 @@ module.exports = (ipfs) => {
   }
 
   function onPeersChange () {
-    localStore.topics((err, topics) => {
+    store.topics((err, topics) => {
       if (err) {
         console.error('peer poller: error getting topics', err)
         return // early
@@ -57,14 +55,11 @@ module.exports = (ipfs) => {
       eachSeries(
         topics,
         (topic, callback) => {
-          localStore.headForTopic(topic, (err, head) => {
-            if (err) {
-              callback(err)
-            } else {
-              // fix: do I really need a delay?
-              setTimeout(() => ipfs.pubsub.publish(topic, head, callback), PUB_SUB_DELAY)
-            }
-          })
+          each(
+            pubSubDelays(),
+            publishWithDelay.bind(null, topic),
+            callback
+          )
         },
         (err) => {
           if (err) {
@@ -72,6 +67,24 @@ module.exports = (ipfs) => {
           }
         }
       )
+
+      function publishWithDelay (topic, delay, callback) {
+        // fix: do I really need a delay?
+        setTimeout(() => {
+          store.headForTopic(topic, (err, head) => {
+            if (err) {
+              callback(err)
+            } else {
+              ipfs.pubsub.publish(topic, head, callback)
+            }
+          })
+        }, delay)
+      }
     })
   }
+}
+
+function pubSubDelays () {
+  // TODO: this is ugly:
+  return [1000, 3000, 6000]
 }
