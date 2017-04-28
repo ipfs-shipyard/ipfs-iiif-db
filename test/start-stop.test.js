@@ -1,20 +1,20 @@
 /* eslint-env mocha */
 'use strict'
 
-const IpfsIiifAnnotations = require('../')
+const DB = require('../')
 
 describe('start and stop', () => {
-  let iia
+  let db
 
   before(() => {
-    iia = IpfsIiifAnnotations()
+    db = DB()
   })
 
   it('starts', (done) => {
-    iia.start(done)
+    db.start(done)
   })
 
   it('stops', (done) => {
-    iia.stop(done)
+    db.stop(done)
   })
 })

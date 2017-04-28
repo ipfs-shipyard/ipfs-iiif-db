@@ -5,38 +5,32 @@ const chai = require('chai')
 chai.use(require('dirty-chai'))
 const expect = chai.expect
 
-const IpfsIiifAnnotations = require('../')
+const DB = require('../')
 
 describe('produce and consume', () => {
-  let iiaProducer, iiaConsumer
   let producer
   let consumer
   let subscription
 
   before(() => {
-    iiaProducer = IpfsIiifAnnotations()
+    producer = DB()
   })
 
-  before((done) => iiaProducer.start(done))
-  after((done) => iiaProducer.stop(done))
+  before((done) => producer.start(done))
+  after((done) => producer.stop(done))
   after((done) => {
-    if (iiaConsumer) {
-      iiaConsumer.stop(done)
+    if (consumer) {
+      consumer.stop(done)
     } else {
       done()
     }
   })
 
   it('can get the producer id', (done) => {
-    producer = iiaProducer.id((err, id) => {
+    producer.id((err, id) => {
       expect(err).to.not.exist()
       done()
     })
-  })
-
-  it('can create a producer', (done) => {
-    producer = iiaProducer.producer()
-    done()
   })
 
   it('can put a string value', (done) => {
@@ -44,26 +38,31 @@ describe('produce and consume', () => {
   })
 
   it('can start a consumer node', (done) => {
-    iiaConsumer = IpfsIiifAnnotations()
-    iiaConsumer.start(done)
+    consumer = DB()
+    consumer.start(done)
   })
 
   it('can get id of the consumer node', (done) => {
-    iiaConsumer.id((err, id) => {
+    consumer.id((err, id) => {
       expect(err).to.not.exist()
       done()
     })
   })
 
-  it('can start a consumer', (done) => {
-    consumer = iiaConsumer.consumer()
-    done()
-  })
-
-  it('consumer can subscribe to name', (done) => {
-    subscription = consumer.onChange('name', value => {
+  it('consumer can get a name', (done) => {
+    consumer.get('name', value => {
       expect(value).to.equal('value')
       done()
+    })
+  }).timeout(5000)
+
+  it('consumer can get a change on a name', (done) => {
+    subscription = consumer.onChange('name', value => {
+      expect(value).to.equal('value 2')
+      done()
+    })
+    producer.put('name', 'value 2', (err) => {
+      expect(err).to.not.exist()
     })
   }).timeout(5000)
 

@@ -1,4 +1,4 @@
-# ipfs-iiif-annotations
+# ipfs-iiif-db
 
 > IIIF annotations JS client over IPFS
 
@@ -6,55 +6,48 @@
 
 ## Install
 
-TBD
-
-## Include
-
-In your HTML:
-
-```html
-<script src="..."></sript>
+```sh
+$ npm install ipfs-iiif-db
 ```
 
-## Use
-
-### instantiate
-
-```js
-iia = TBD()
-```
-
-### start
+## Import
 
 
 ```js
-iia.start([callback])
+const DB = require('ipfs-iiif-db')
 ```
 
-### create a producer
+## instantiate
 
 ```js
-const producer = iiia.producer()
+const db = DB()
 ```
 
-#### produce a change
+## start
+
 
 ```js
-producer.put(id, value, callback)
+db.start([callback])
+```
+
+## produce a change
+
+```js
+db.put(id, value, callback)
 ```
 
 The id needs to be a string, but the value can be any JS object that can be represented in JSON.
 
-### create a consumer
+## get latest
 
-```js
-const consumer = iiia.consumer()
+```
+db.get(id, callback)
 ```
 
 #### Listen for changes
 
 ```js
-const subscription = consumer.onChange(id, (newValue) => {
+const subscription = db.onChange(id, (newValue) => {
   console.log('new value is: %j', newValue)
 })
 ```
@@ -72,7 +65,7 @@ subscription.cancel()
 
 
 ```js
-iia.stop([callback])
+db.stop([callback])
 ```
 
 

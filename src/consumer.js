@@ -4,7 +4,19 @@ const topicName = require('./topic-name')
 
 module.exports = (ipfs) => {
   return {
+    get: get,
     onChange: onChange
+  }
+
+  function get (id, callback) {
+    let replied = false
+    const sub = onChange(id, (err, result) => {
+      if (!replied) {
+        replied = true
+        sub.cancel()
+        callback(err, result)
+      }
+    })
   }
 
   function onChange (id, fn) {
