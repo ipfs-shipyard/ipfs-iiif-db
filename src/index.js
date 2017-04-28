@@ -52,7 +52,7 @@ module.exports = () => {
 
   function _stop (callback) {
     if (!ipfs) {
-      callback(new Error('IPFS stopped'))
+      callback(new Error('IPFS already stopped'))
       return // early
     }
 
@@ -64,7 +64,7 @@ module.exports = () => {
 
   function _put (id, value, callback) {
     if (!ipfs) {
-      callback(new Error('IPFS stopped'))
+      callback(new Error('IPFS not started'))
       return // early
     }
     return producer.put(id, value, callback)
@@ -72,7 +72,7 @@ module.exports = () => {
 
   function _get (id, callback) {
     if (!ipfs) {
-      callback(new Error('IPFS stopped'))
+      callback(new Error('IPFS not started'))
       return // early
     }
     return consumer.get(id, callback)
@@ -80,7 +80,7 @@ module.exports = () => {
 
   function _onChange (id, fn) {
     if (!ipfs) {
-      throw new Error('IPFS stopped')
+      throw new Error('IPFS not started')
     }
     return consumer.onChange(id, fn)
   }
