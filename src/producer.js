@@ -25,6 +25,7 @@ module.exports = (store, ipfs) => {
     waterfall(
       [
         (callback) => {
+          console.log('ipfs.object.put')
           ipfs.object.put({
             Data: new Buffer(JSON.stringify(data)),
             Links: [] // fix
@@ -33,12 +34,14 @@ module.exports = (store, ipfs) => {
 
         (node, callback) => {
           const mh = node.multihash
+          console.log('setting head of %s to', topic, mh)
           store.setHead(topic, mh, (err) => {
             callback(err, mh)
           })
         },
 
         (mh, callback) => {
+          console.log('PUBLISHING topic %s', topic, mh)
           ipfs.pubsub.publish(topic, mh, callback)
         }
       ],
@@ -75,6 +78,7 @@ module.exports = (store, ipfs) => {
             if (err) {
               callback(err)
             } else {
+              console.log('(2) PUBLISHING topic %s', topic, head)
               ipfs.pubsub.publish(topic, head, callback)
             }
           })

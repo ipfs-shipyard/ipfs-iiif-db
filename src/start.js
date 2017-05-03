@@ -17,7 +17,11 @@ module.exports = function start (store, _callback) {
     }
   }
 
+
   const ipfs = new IPFS(options)
+
+  console.log('IPFS:', ipfs)
+
   ipfs.on('error', callback)
   ipfs.on('ready', onReady)
 

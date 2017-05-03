@@ -11,14 +11,18 @@ module.exports = (store, ipfs) => {
   function get (id, callback) {
     let replied = false
     const topic = topicName(id)
+    console.log('getting head for topic', topic)
     store.headForTopic(topic, (err, head) => {
       if (err) {
         callback(err)
         return // early
       }
 
+      console.log('HEAD for topic', head)
+
       if (!head) {
         const sub = onChange(id, (result) => {
+          console.log('CHANGE', result)
           if (!replied) {
             replied = true
             sub.cancel()
@@ -37,6 +41,8 @@ module.exports = (store, ipfs) => {
     // const subscription = ensureSubscription(topic)
 
     ipfs.once('stop', cancel)
+
+    console.log('pubsub: subscribing topic', topic)
     ipfs.pubsub.subscribe(topic, handler)
 
     return {
@@ -44,6 +50,7 @@ module.exports = (store, ipfs) => {
     }
 
     function handler (message) {
+      console.log('pub sub handling', message)
       const head = message.data
       store.headForTopic(topic, (err, previousHead) => {
         if (err) {
@@ -88,7 +95,9 @@ module.exports = (store, ipfs) => {
   }
 
   function getFromHead (head, name, callback) {
+    console.log('get from head', head, name)
     ipfs.object.get(head, (err, object) => {
+      console.log('got from head', err, object)
       if (err) {
         callback(err)
         return // early

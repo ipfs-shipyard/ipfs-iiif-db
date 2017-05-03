@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="css/app.css">
+    <title>IIIF over IPFS Example</title>
+  </head>
+
+  <body>
+    <div class="header">
+      <a href="https://ipfs.io" target="_blank">
+        <img src="ipfs-logo.svg" height="32" id="logo" alt="ipfs logo">
+      </a>
+      <h1>IIIF over IPFS example - Producer</h1>
+    </div>
+
+    <div class="wrapper">
+      <div id="ipfs" class="ipfs" >
+        <div id="files">
+          <div class="multihash-wrapper">
+            <input id="text" type="text" placeholder="Text"/>
+            <button id="save" type="button">Save</button>
+            <div class="clear"></div>
+          </div>
+          <div class="file-list"></div>
+          <div id="filesStatus"></div>
+        </div>
+        <pre id="errors" class="hidden"></pre>
+      </div>
+    </div>
+
+    <!-- The IPFS node module -->
+    <script src="js/producer.js"></script>
+  </body>
+</html>
