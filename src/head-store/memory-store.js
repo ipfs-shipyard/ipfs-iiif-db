@@ -10,20 +10,22 @@ module.exports = () => {
   return {
     start: start,
     setHead: setHead,
-    topics: topics,
-    headForTopic: headForTopic
+    getHead: getHead
   }
 
   function start (callback) {
     setImmediate(callback)
   }
 
-  function setHead (id, hash, callback) {
-    heads[id] = hash
+  function setHead (id, version, hash, callback) {
+    heads[id] = {
+      version: version,
+      hash: hash
+    }
     setImmediate(callback)
   }
 
-  function headForTopic (topic, callback) {
+  function getHead (topic, callback) {
     setImmediate(() => {
       callback(null, heads[topic])
     })

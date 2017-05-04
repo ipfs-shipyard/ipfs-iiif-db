@@ -5,10 +5,13 @@ const each = require('async/each')
 const multihashes = require('multihashes')
 const topicName = require('./topic-name')
 const Peers = require('./peers')
+const Broadcaster = require('./broadcaster')
 
 module.exports = (store, ipfs, node) => {
   const peers = Peers(ipfs)
   peers.on('changed', onPeersChange)
+
+  const broadcasters = {}
 
   return {
     put: put
@@ -32,25 +35,18 @@ module.exports = (store, ipfs, node) => {
           }, {enc: 'json'}, callback)
         },
 
-        (node, callback) => {
-          const mh = multihashes.toB58String(node.multihash)
-          console.log('setting head of %s to', topic, mh)
-          store.setHead(topic, mh, (err) => {
-            callback(err, mh)
-          })
-        },
+        (node, callback) => callback(null, multihashes.toB58String(node.multihash)),
 
         (mh, callback) => {
-          // TODO: we shouldn't need to keep publishing
-          const value = new Buffer(mh)
-          setInterval(() => ipfs.pubsub.publish(topic, value, (err) => {
-            console.log('PUBLISHING topic %s', topic, mh)
+          store.getHead(topic, (err, head) => {
             if (err) {
-              // TODO: handle error
-              throw err
+              callback(err)
+              return //early
             }
-          }), 1000)
-          callback()
+
+            ensureBroadcaster(topic)
+            store.setHead(topic, head ? head.versin + 1 : 0, mh, callback)
+          })
         }
       ],
       callback
@@ -98,6 +94,13 @@ module.exports = (store, ipfs, node) => {
   //     }
   //   })
   // }
+
+  function ensureBroadcaster (topic) {
+    let broadcaster = broadcasters[topic]
+    if (!broadcaster) {
+      broadcaster = broadcasters[topic] = Broadcaster(topic, ipfs, store)
+    }
+  }
 }
 
 function pubSubDelays () {

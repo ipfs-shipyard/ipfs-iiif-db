@@ -14,21 +14,29 @@ module.exports = () => {
   return {
     start: start,
     setHead: setHead,
-    headForTopic: headForTopic
+    getHead: getHead
   }
 
   function start (callback) {
     setImmediate(callback)
   }
 
-  function setHead (id, hash, callback) {
-    store.setItem(key(id), hash)
+  function setHead (id, version, hash, callback) {
+    const value = {
+      version: version,
+      hash: hash
+    }
+    store.setItem(key(id), JSON.stringify(value))
     setImmediate(callback)
   }
 
-  function headForTopic (id, callback) {
+  function getHead (id, callback) {
     setImmediate(() => {
-      callback(null, store.getItem(key(id)))
+      let value = store.getItem(key(id))
+      if (value) {
+        value = JSON.parse(value)
+      }
+      callback(null, value)
     })
   }
 }

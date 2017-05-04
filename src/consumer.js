@@ -31,20 +31,18 @@ module.exports = (store, ipfs) => {
     return emitter
 
     function handleMessage (message) {
-      const head = message.data.toString()
-      store.headForTopic(topic, (err, previousHead) => {
+      const head = JSON.parse(message.data.toString())
+      store.getHead(topic, (err, previousHead) => {
         if (err) {
           throw err
         }
-
-        // TODO: make this causal
-        if (previousHead && previousHead === head) {
+        if (previousHead && previousHead.version > head.version) {
           return // early
         }
 
         console.log('have a new head for topic %s. Setting it..', topic)
 
-        store.setHead(topic, head, (err) => {
+        store.setHead(topic, head.version, head.hash, (err) => {
           // todo: handle error
           if (err) {
             throw err
@@ -62,7 +60,7 @@ module.exports = (store, ipfs) => {
   function getHead (id, callback) {
     const topic = topicName(id)
     const subscription = ensureSubscription(topic)
-    store.headForTopic(topic, (err, head) => {
+    store.getHead(topic, (err, head) => {
       if (err) {
         callback(err)
         return // early
@@ -89,7 +87,7 @@ module.exports = (store, ipfs) => {
         callback(err)
         return //early
       }
-      getFromHash(head, callback)
+      getFromHash(head.hash, callback)
     })
   }
 

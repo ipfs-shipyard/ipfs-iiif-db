@@ -85,7 +85,7 @@ function getHead () {
     if (err) {
       return onError(err)
     }
-    $multihashInput.value = head
+    $multihashInput.value = head.hash
   })
 }
 
