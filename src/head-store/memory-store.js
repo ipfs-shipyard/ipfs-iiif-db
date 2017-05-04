@@ -23,13 +23,6 @@ module.exports = () => {
     setImmediate(callback)
   }
 
-  function topics (callback) {
-    // fix
-    setImmediate(() => {
-      callback(null, Object.keys(heads))
-    })
-  }
-
   function headForTopic (topic, callback) {
     setImmediate(() => {
       callback(null, heads[topic])

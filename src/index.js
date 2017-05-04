@@ -3,12 +3,12 @@
 const start = require('./start')
 const Producer = require('./producer')
 const Consumer = require('./consumer')
-const LocalStore = require('./local-store')
+const HeadStore = require('./head-store')
 const Emitter = require('events')
 
 module.exports = () => {
   let ipfs, producer, consumer
-  const store = LocalStore()
+  const store = HeadStore()
 
   const node = Object.assign(new Emitter(), {
     start: _start,
