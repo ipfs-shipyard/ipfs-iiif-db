@@ -2,6 +2,7 @@
 
 const waterfall = require('async/waterfall')
 const each = require('async/each')
+const multihashes = require('multihashes')
 const topicName = require('./topic-name')
 const Peers = require('./peers')
 
@@ -32,14 +33,7 @@ module.exports = (store, ipfs, node) => {
         },
 
         (node, callback) => {
-          console.log('ipfs.object.get')
-          ipfs.object.get(node.multihash, (err, obj) => {
-            callback(err, node)
-          })
-        },
-
-        (node, callback) => {
-          const mh = node.multihash
+          const mh = multihashes.toB58String(node.multihash)
           console.log('setting head of %s to', topic, mh)
           store.setHead(topic, mh, (err) => {
             callback(err, mh)
@@ -48,7 +42,8 @@ module.exports = (store, ipfs, node) => {
 
         (mh, callback) => {
           // TODO: we shouldn't need to keep publishing
-          setInterval(() => ipfs.pubsub.publish(topic, mh, (err) => {
+          const value = new Buffer(mh)
+          setInterval(() => ipfs.pubsub.publish(topic, value, (err) => {
             console.log('PUBLISHING topic %s', topic, mh)
             if (err) {
               // TODO: handle error

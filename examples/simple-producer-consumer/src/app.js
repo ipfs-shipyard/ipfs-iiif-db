@@ -8,6 +8,8 @@ const $stopButton = document.querySelector('#stop')
 const $peers = document.querySelector('#peers')
 const $errors = document.querySelector('#errors')
 const $idInput = document.querySelector('#iiifid')
+const $multihashInput = document.querySelector('#multihash')
+const $getHeadButton = document.querySelector('#get-head')
 const $getButton = document.querySelector('#get')
 const $connectPeer = document.querySelector('input.connect-peer')
 const $connectPeerButton = document.querySelector('button.connect-peer')
@@ -73,24 +75,35 @@ function createFileBlob (data, multihash) {
   return listItem
 }
 
-function getValue () {
-  const idInput = $idInput.value
-
-  $errors.className = 'hidden'
-
-  if (!idInput) {
-    return console.log('no id was inserted')
-  }
-
-  $value.innerHTML = 'Getting ' + idInput + ' ...'
-
-  // files.get documentation
-  // https://github.com/ipfs/interface-ipfs-core/tree/master/API/files#get
-  node.get(idInput, (err, value) => {
+function getHead () {
+  const id = $idInput.value
+  $multihashInput.value = 'Getting head for ' + id + ' ...'
+  node.getHead(id, (err, head) => {
     if (err) {
       return onError(err)
     }
-    $value.innerHTML = idInput + ' = ' + value
+    $multihashInput.value = head
+  })
+}
+
+function getValue () {
+  const mh = $multihashInput.value
+
+  $errors.className = 'hidden'
+
+  if (!mh) {
+    return console.log('no multihash was inserted')
+  }
+
+  $value.innerHTML = 'Getting ' + mh + ' ...'
+
+  // files.get documentation
+  // https://github.com/ipfs/interface-ipfs-core/tree/master/API/files#get
+  node.getFromHash(mh, (err, value) => {
+    if (err) {
+      return onError(err)
+    }
+    $value.innerHTML = mh + ' = ' + value
   })
 }
 
@@ -106,11 +119,11 @@ function setValue () {
 
   // files.get documentation
   // https://github.com/ipfs/interface-ipfs-core/tree/master/API/files#get
-  node.put(id, value, (err, value) => {
+  node.put(id, value, (err) => {
     if (err) {
       return onError(err)
     }
-    console.log('value %s was set', value)
+    console.log('value of %s was set to %s', id, value)
   })
 }
 
@@ -190,6 +203,7 @@ const startApplication = () => {
 
   $startButton.addEventListener('click', start)
   $stopButton.addEventListener('click', stop)
+  $getHeadButton.addEventListener('click', getHead)
   $getButton.addEventListener('click', getValue)
   $setButton.addEventListener('click', setValue)
 }

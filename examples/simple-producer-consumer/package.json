@@ -2,14 +2,16 @@
   "name": "simple-producer-consumer",
   "version": "0.0.1",
   "scripts": {
-    "compile": "",
-    "serve": "http-server -c-1 -p 12345 public",
     "compile": "browserify src/app.js -o public/js/app.js",
+    "serve": "http-server -c-1 -p 12345 public",
     "start": "npm run compile && npm run serve"
   },
   "license": "MIT",
   "devDependencies": {
     "browserify": "^14.3.0",
     "http-server": "^0.10.0"
+  },
+  "dependencies": {
+    "multihashes": "^0.4.5"
   }
 }

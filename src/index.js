@@ -15,6 +15,8 @@ module.exports = () => {
     stop: _stop,
     put: _put,
     get: _get,
+    getHead: _getHead,
+    getFromHash: _getFromHash,
     onChange: _onChange,
     id: _id,
     peerInfo: _peerInfo
@@ -82,6 +84,24 @@ module.exports = () => {
       return // early
     }
     return consumer.get(id, callback)
+  }
+
+  function _getHead (id, callback) {
+    if (!ipfs) {
+      callback(new Error('IPFS not started'))
+      return // early
+    }
+
+    return consumer.getHead(id, callback)
+  }
+
+  function _getFromHash (hash, callback) {
+    if (!ipfs) {
+      callback(new Error('IPFS not started'))
+      return // early
+    }
+
+    return consumer.getFromHash(hash, callback)
   }
 
   function _onChange (id, fn) {
