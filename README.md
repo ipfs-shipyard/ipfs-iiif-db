@@ -46,10 +46,22 @@ db.get(id, callback)
 
 #### Listen for changes
 
+To listen for changes you must pass a second argument to `get` with the value `true`. This will return a changes feed you can listen on:
+
 ```js
-const subscription = db.onChange(id, (newValue) => {
+const changes = db.get(id, true, (value) => {
   console.log('new value is: %j', newValue)
 })
+
+changes.on('change', (newValue) => {
+  console.log('new value is: %j', newValue)
+})
+```
+
+You can close this changes feed:
+
+```js
+changes.close()
 ```
 
 #### Cancel subscription

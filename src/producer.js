@@ -45,7 +45,7 @@ module.exports = (store, ipfs, node) => {
             }
 
             ensureBroadcaster(topic)
-            store.setHead(topic, head ? head.versin + 1 : 0, mh, callback)
+            store.setHead(topic, head ? head.version + 1 : 0, mh, callback)
           })
         }
       ],

@@ -2,6 +2,7 @@
 
 const Emitter = require('events')
 const topicName = require('./topic-name')
+const ChangesFeed = require('./changes-feed')
 
 module.exports = (store, ipfs) => {
 
@@ -32,10 +33,12 @@ module.exports = (store, ipfs) => {
 
     function handleMessage (message) {
       const head = JSON.parse(message.data.toString())
+      console.log('new version on pubsub: %d', head.version)
       store.getHead(topic, (err, previousHead) => {
         if (err) {
           throw err
         }
+        console.log('previous version is %d', previousHead && previousHead.version)
         if (previousHead && previousHead.version > head.version) {
           return // early
         }
@@ -81,7 +84,13 @@ module.exports = (store, ipfs) => {
 
   /*** Get ***/
 
-  function get (id, callback) {
+  function get (id, listenForChanges, callback) {
+    if (typeof (listenForChanges) === 'function') {
+      callback = listenForChanges
+      listenForChanges = false
+    }
+
+    console.trace('callback:', callback)
     getHead(id, (err, head) => {
       if (err) {
         callback(err)
@@ -89,6 +98,10 @@ module.exports = (store, ipfs) => {
       }
       getFromHash(head.hash, callback)
     })
+
+    if (listenForChanges) {
+      return createChangesFeed(id)
+    }
   }
 
   function getFromHash (hash, callback) {
@@ -102,6 +115,10 @@ module.exports = (store, ipfs) => {
       const message = JSON.parse(object.data.toString())
       callback(null, message.value)
     })
+  }
+
+  function createChangesFeed (id) {
+    return ChangesFeed(id, store, ipfs)
   }
 
   // function ensureSubscription (topic) {

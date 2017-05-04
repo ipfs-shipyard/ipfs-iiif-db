@@ -1,6 +1,7 @@
 'use strict'
 
 const setImmediate = require('async/setImmediate')
+const Emitter = require('events')
 
 const PREFIX = 'ipfs:iiif:db:'
 
@@ -11,11 +12,15 @@ module.exports = () => {
 
   const heads = {}
 
-  return {
+  const emitter = new Emitter()
+
+  Object.assign(emitter, {
     start: start,
     setHead: setHead,
     getHead: getHead
-  }
+  })
+
+  return emitter
 
   function start (callback) {
     setImmediate(callback)
@@ -28,6 +33,7 @@ module.exports = () => {
     }
     store.setItem(key(id), JSON.stringify(value))
     setImmediate(callback)
+    setImmediate(() => emitter.emit(id, value))
   }
 
   function getHead (id, callback) {

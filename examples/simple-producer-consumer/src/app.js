@@ -31,6 +31,7 @@ const $getFromIdValue = document.getElementById('get-from-id-value')
 
 let node
 let peerInfo
+let changesFeed
 
 /*
  * Start and stop the IPFS node
@@ -112,11 +113,18 @@ function getValue () {
 
 function getFromId () {
   const id = $idFullInput.value
-  node.get(id, (err, value) => {
+  if (changesFeed) {
+    changesFeed.cancel()
+  }
+  changesFeed = node.get(id, true, (err, value) => {
     if (err) {
       return onError(err)
     }
     $getFromIdValue.innerHTML = value
+  })
+
+  changesFeed.on('change', (newValue) => {
+    $getFromIdValue.innerHTML = newValue
   })
 }
 

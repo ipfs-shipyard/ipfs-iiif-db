@@ -78,12 +78,12 @@ module.exports = () => {
     return producer.put(id, value, callback)
   }
 
-  function _get (id, callback) {
+  function _get (id, getChanges, callback) {
     if (!ipfs) {
       callback(new Error('IPFS not started'))
       return // early
     }
-    return consumer.get(id, callback)
+    return consumer.get(id, getChanges, callback)
   }
 
   function _getHead (id, callback) {
