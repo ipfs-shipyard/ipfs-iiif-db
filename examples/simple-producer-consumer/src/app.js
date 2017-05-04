@@ -3,14 +3,15 @@ global.setImmediate = require('timers').setImmediate;
 
 const DB = require('../../../')
 
-const $startButton = document.querySelector('#start')
-const $stopButton = document.querySelector('#stop')
-const $peers = document.querySelector('#peers')
-const $errors = document.querySelector('#errors')
-const $idInput = document.querySelector('#iiifid')
-const $multihashInput = document.querySelector('#multihash')
-const $getHeadButton = document.querySelector('#get-head')
-const $getButton = document.querySelector('#get')
+const $startButton = document.getElementById('start')
+const $stopButton = document.getElementById('stop')
+const $peers = document.getElementById('peers')
+const $errors = document.getElementById('errors')
+const $idInput = document.getElementById('iiifid')
+const $idFullInput = document.getElementById('iiifid-full')
+const $multihashInput = document.getElementById('multihash')
+const $getHeadButton = document.getElementById('get-head')
+const $getFromHashButton = document.getElementById('get-from-hash')
 const $connectPeer = document.querySelector('input.connect-peer')
 const $connectPeerButton = document.querySelector('button.connect-peer')
 const $wrapper = document.querySelector('.wrapper')
@@ -18,13 +19,15 @@ const $header = document.querySelector('.header')
 const $body = document.querySelector('body')
 const $idContainer = document.querySelector('.id-container')
 const $addressesContainer = document.querySelector('.addresses-container')
-const $details = document.querySelector('#details')
+const $details = document.getElementById('details')
 const $allDisabledButtons = document.querySelectorAll('button:disabled')
 const $allDisabledInputs = document.querySelectorAll('input:disabled')
-const $value = document.querySelector('#get-value')
-const $publishId = document.querySelector('#publish-id')
-const $publishValue = document.querySelector('#publish-value')
-const $setButton = document.querySelector('#set')
+const $value = document.getElementById('get-value')
+const $publishId = document.getElementById('publish-id')
+const $publishValue = document.getElementById('publish-value')
+const $setButton = document.getElementById('set')
+const $getFromIdButton = document.getElementById('get')
+const $getFromIdValue = document.getElementById('get-from-id-value')
 
 let node
 let peerInfo
@@ -104,6 +107,16 @@ function getValue () {
       return onError(err)
     }
     $value.innerHTML = mh + ' = ' + value
+  })
+}
+
+function getFromId () {
+  const id = $idFullInput.value
+  node.get(id, (err, value) => {
+    if (err) {
+      return onError(err)
+    }
+    $getFromIdValue.innerHTML = value
   })
 }
 
@@ -203,9 +216,10 @@ const startApplication = () => {
 
   $startButton.addEventListener('click', start)
   $stopButton.addEventListener('click', stop)
-  $getHeadButton.addEventListener('click', getHead)
-  $getButton.addEventListener('click', getValue)
   $setButton.addEventListener('click', setValue)
+  $getHeadButton.addEventListener('click', getHead)
+  $getFromHashButton.addEventListener('click', getValue)
+  $getFromIdButton.addEventListener('click', getFromId)
 }
 
 startApplication()
