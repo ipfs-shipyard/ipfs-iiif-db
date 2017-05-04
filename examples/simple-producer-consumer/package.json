@@ -4,9 +4,7 @@
   "scripts": {
     "compile": "",
     "serve": "http-server -c-1 -p 12345 public",
-    "compile": "npm run compile:producer && npm run compile:consumer",
-    "compile:producer": "browserify src/producer.js -o public/js/producer.js",
-    "compile:consumer": "browserify src/consumer.js -o public/js/consumer.js",
+    "compile": "browserify src/app.js -o public/js/app.js",
     "start": "npm run compile && npm run serve"
   },
   "license": "MIT",

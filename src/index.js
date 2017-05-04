@@ -4,19 +4,23 @@ const start = require('./start')
 const Producer = require('./producer')
 const Consumer = require('./consumer')
 const LocalStore = require('./local-store')
+const Emitter = require('events')
 
 module.exports = () => {
   let ipfs, producer, consumer
   const store = LocalStore()
 
-  return {
+  const node = Object.assign(new Emitter(), {
     start: _start,
     stop: _stop,
     put: _put,
     get: _get,
     onChange: _onChange,
-    id: _id
-  }
+    id: _id,
+    peerInfo: _peerInfo
+  })
+
+  return node
 
   function _start (callback) {
     if (ipfs) {
@@ -30,7 +34,7 @@ module.exports = () => {
         return // early
       }
 
-      producer = Producer(store, ipfs)
+      producer = Producer(store, ipfs, node)
       consumer = Consumer(store, ipfs)
       callback()
     })
@@ -85,5 +89,13 @@ module.exports = () => {
       throw new Error('IPFS not started')
     }
     return consumer.onChange(id, fn)
+  }
+
+  function _peerInfo (callback) {
+    if (!ipfs) {
+      callback(new Error('IPFS not started'))
+      return // early
+    }
+    return ipfs.id(callback)
   }
 }

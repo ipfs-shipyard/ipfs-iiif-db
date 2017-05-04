@@ -50,7 +50,6 @@ module.exports = (store, ipfs) => {
     }
 
     function handler (message) {
-      console.log('pub sub handling', message)
       const head = message.data
       store.headForTopic(topic, (err, previousHead) => {
         if (err) {
@@ -62,17 +61,21 @@ module.exports = (store, ipfs) => {
           return // early
         }
 
+        console.log('have a new head for topic %s. Setting it..', topic)
+
         store.setHead(topic, head, (err) => {
           // todo: handle error
           if (err) {
             throw err
           }
 
+          console.log('getting %s from head...', id)
           getFromHead(head, id, (err, obj) => {
             // todo: handle error
             if (err) {
               throw err
             }
+            console.log('got %s from head', id)
             fn(obj)
           })
         })

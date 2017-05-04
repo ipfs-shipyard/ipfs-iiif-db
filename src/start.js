@@ -34,10 +34,11 @@ module.exports = function start (store, _callback) {
   }
 
   function onReady () {
+    console.log('IPFS ready')
     store.start(callback)
   }
 }
 
 function repoPath () {
-  return 'temp/ipfs-' + Math.random()
+  return 'temp/ipfs-iifs-producer-' + Math.random()
 }

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="css/app.css">
-    <title>IIIF over IPFS Example</title>
+    <title>IPFS IIIF DB</title>
   </head>
 
   <body>
@@ -11,16 +11,57 @@
       <a href="https://ipfs.io" target="_blank">
         <img src="ipfs-logo.svg" height="32" id="logo" alt="ipfs logo">
       </a>
-      <h1>IIIF over IPFS example</h1>
+      <h1>IPFS IIIF DB</h1>
     </div>
 
     <div class="wrapper">
-      <h2>
-        <ul>
-          <li><a href="producer.html">Start producer</a></li>
-          <li><a href="consumer.html">Start consumer</a></li>
-        </ul>
-      </h2>
+      <div id="ipfs" class="ipfs" >
+        <div class="left">
+          <div id="buttons" class="buttons">
+            <button id="start" type="button">Start IPFS</button>
+            <button id="stop" disabled type="button">Stop IPFS</button>
+          </div>
+          <div id="details" class="disabled">
+            <h2>Your daemon</h2>
+            <h3>ID</h3>
+            <pre class='id-container'>N/A</pre>
+            <h3>Addresses</h3>
+            <ul class='addresses-container'>
+              <li>Not yet online</li>
+            </ul>
+          </div>
+        </div>
+        <div class="right">
+          <div id="peers" class="disabled">
+            <h2>Peers</h2>
+          </div>
+        </div>
+
+        <div class="clear"></div>
+        <div id="files">
+          <div class="multihash-wrapper">
+            <input disabled id="publish-id" type="text" value="ipfs-iiif-db-example"/>
+            <input disabled id="publish-value" type="text"/>
+            <button disabled id="set" type="button">Set value</button>
+            <div class="clear"></div>
+          </div>
+          <pre id="value"></pre>
+        </div>
+
+        <div class="clear"></div>
+        <div id="files">
+          <div class="multihash-wrapper">
+            <input disabled id="iiifid" type="text" value="ipfs-iiif-db-example"/>
+            <button disabled id="get" type="button">Get value</button>
+            <div class="clear"></div>
+          </div>
+          <pre id="get-value"></pre>
+        </div>
+        <pre id="errors" class="hidden"></pre>
+      </div>
     </div>
+
+    <!-- The IPFS node module -->
+    <script src="js/app.js"></script>
   </body>
 </html>

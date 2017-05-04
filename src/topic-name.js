@@ -2,4 +2,4 @@
 
 const PREFIX = 'iifs:annotations:'
 
-module.exports = (name) => name//PREFIX + name
+module.exports = (name) => PREFIX + name

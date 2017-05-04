@@ -14739,38 +14739,205 @@ exports.createContext = Script.createContext = function (context) {
 
 },{"indexof":11}],57:[function(require,module,exports){
 (function (global){
+'use strict'
 global.setImmediate = require('timers').setImmediate;
+
 const DB = require('../../../')
 
-const db = DB()
+const $startButton = document.querySelector('#start')
+const $stopButton = document.querySelector('#stop')
+const $peers = document.querySelector('#peers')
+const $errors = document.querySelector('#errors')
+const $idInput = document.querySelector('#iiifid')
+const $getButton = document.querySelector('#get')
+const $connectPeer = document.querySelector('input.connect-peer')
+const $connectPeerButton = document.querySelector('button.connect-peer')
+const $wrapper = document.querySelector('.wrapper')
+const $header = document.querySelector('.header')
+const $body = document.querySelector('body')
+const $idContainer = document.querySelector('.id-container')
+const $addressesContainer = document.querySelector('.addresses-container')
+const $details = document.querySelector('#details')
+const $allDisabledButtons = document.querySelectorAll('button:disabled')
+const $allDisabledInputs = document.querySelectorAll('input:disabled')
+const $value = document.querySelector('#get-value')
+const $publishId = document.querySelector('#publish-id')
+const $publishValue = document.querySelector('#publish-value')
+const $setButton = document.querySelector('#set')
 
-db.start((err) => {
-  if (err) {
-    reportError(err)
+let node
+let peerInfo
+
+/*
+ * Start and stop the IPFS node
+ */
+
+function start () {
+  if (!node) {
+    node = DB()
+    node.start((err) => {
+      node.peerInfo((err, _peerInfo) => {
+        if (err) {
+          return onError(err)
+        }
+        peerInfo = _peerInfo
+        updateView('ready', node)
+        node.on('peers changed', refreshPeerList)
+        $peers.innerHTML = '<h2>peers</h2><i>waiting for peers...</i>'
+      })
+    })
+
+    updateView('starting', node)
   }
-})
+}
 
-$saveButton = document.querySelector('#save')
-$text = document.querySelector('#text')
-$errors = document.querySelector('#errors')
+function stop () {
+  window.location.href = window.location.href // refresh page
+}
 
-$saveButton.addEventListener('click', save)
+/*
+ * Fetch files and display them to the user
+ */
 
-function save () {
-  const value = $text.value
-  console.log('save', value)
-  db.put('simple-producer-consumer-example', value, (err) => {
-    console.log('SAVED')
+function createFileBlob (data, multihash) {
+  const file = new window.Blob(data, {type: 'application/octet-binary'})
+  const fileUrl = window.URL.createObjectURL(file)
+
+  const listItem = document.createElement('div')
+  const link = document.createElement('a')
+  link.setAttribute('href', fileUrl)
+  link.setAttribute('download', multihash)
+  const date = (new Date()).toLocaleTimeString()
+
+  link.innerText = date + ' - ' + multihash + ' - Size: ' + file.size
+  listItem.appendChild(link)
+  return listItem
+}
+
+function getValue () {
+  const idInput = $idInput.value
+
+  $idInput.value = ''
+
+  $errors.className = 'hidden'
+
+  if (!idInput) {
+    return console.log('no id was inserted')
+  }
+
+  $value.innerHTML = 'Getting ' + idInput + ' ...'
+
+  // files.get documentation
+  // https://github.com/ipfs/interface-ipfs-core/tree/master/API/files#get
+  node.get(idInput, (err, value) => {
     if (err) {
-      reportError(err)
+      return onError(err)
     }
+    $value.innerHTML = value
   })
 }
 
-function reportError (err) {
-  $errors.innerHTML = '<span class="error">' + err.message + '</span>'
+function setValue () {
+  const id = $publishId.value
+  const value = $publishValue.value
+
+  $errors.className = 'hidden'
+
+  if (!id) {
+    return console.log('no id was inserted')
+  }
+
+  // files.get documentation
+  // https://github.com/ipfs/interface-ipfs-core/tree/master/API/files#get
+  node.put(id, value, (err, value) => {
+    if (err) {
+      return onError(err)
+    }
+    alert('value was set')
+  })
+}
+
+
+
+/*
+ * Network related functions
+ */
+
+// Get peers from IPFS and display them
+
+function refreshPeerList (peers) {
+  const peersAsHtml = peers
+    .map((addr) => {
+      return '<li>' + addr + '</li>'
+    }).join('')
+
+  $peers.innerHTML = peers.length > 0
+    ? '<h2>Remote Peers</h2><ul>' + peersAsHtml + '</ul>'
+    : '<h2>Remote Peers</h2><i>Waiting for peers...</i>'
+}
+
+/*
+ * UI functions
+ */
+
+function onError (err) {
+  let msg = 'An error occured, check the dev console'
+
+  if (err.stack !== undefined) {
+    msg = err.stack
+  } else if (typeof err === 'string') {
+    msg = err
+  }
+
+  $errors.innerHTML = '<span class="error">' + msg + '</span>'
   $errors.className = 'error visible'
 }
+
+window.onerror = onError
+
+/*
+ * App states
+ */
+const states = {
+  ready: () => {
+    const addressesHtml = peerInfo.addresses.map((address) => {
+      return '<li><span class="address">' + address + '</span></li>'
+    }).join('')
+    $idContainer.innerText = peerInfo.id
+    $addressesContainer.innerHTML = addressesHtml
+    $allDisabledButtons.forEach(b => { b.disabled = false })
+    $allDisabledInputs.forEach(b => { b.disabled = false })
+    $peers.className = ''
+    $details.className = ''
+    $stopButton.disabled = false
+    $startButton.disabled = true
+  },
+  starting: () => {
+    $startButton.disabled = true
+  }
+}
+
+function updateView (state, ipfs) {
+  if (states[state] !== undefined) {
+    states[state]()
+  } else {
+    throw new Error('Could not find state "' + state + '"')
+  }
+}
+
+/*
+ * Boot this application!
+ */
+const startApplication = () => {
+  // Setup event listeners
+
+  $startButton.addEventListener('click', start)
+  $stopButton.addEventListener('click', stop)
+  $getButton.addEventListener('click', getValue)
+  $setButton.addEventListener('click', setValue)
+}
+
+startApplication()
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"../../../":898,"timers":49}],58:[function(require,module,exports){
@@ -135405,17 +135572,21 @@ module.exports = (store, ipfs) => {
           return // early
         }
 
+        console.log('have a new head for topic %s. Setting it..', topic)
+
         store.setHead(topic, head, (err) => {
           // todo: handle error
           if (err) {
             throw err
           }
 
+          console.log('getting %s from head...', id)
           getFromHead(head, id, (err, obj) => {
             // todo: handle error
             if (err) {
               throw err
             }
+            console.log('got %s from head', id)
             fn(obj)
           })
         })
@@ -135470,19 +135641,23 @@ const start = require('./start')
 const Producer = require('./producer')
 const Consumer = require('./consumer')
 const LocalStore = require('./local-store')
+const Emitter = require('events')
 
 module.exports = () => {
   let ipfs, producer, consumer
   const store = LocalStore()
 
-  return {
+  const node = Object.assign(new Emitter(), {
     start: _start,
     stop: _stop,
     put: _put,
     get: _get,
     onChange: _onChange,
-    id: _id
-  }
+    id: _id,
+    peerInfo: _peerInfo
+  })
+
+  return node
 
   function _start (callback) {
     if (ipfs) {
@@ -135496,7 +135671,7 @@ module.exports = () => {
         return // early
       }
 
-      producer = Producer(store, ipfs)
+      producer = Producer(store, ipfs, node)
       consumer = Consumer(store, ipfs)
       callback()
     })
@@ -135552,9 +135727,17 @@ module.exports = () => {
     }
     return consumer.onChange(id, fn)
   }
+
+  function _peerInfo (callback) {
+    if (!ipfs) {
+      callback(new Error('IPFS not started'))
+      return // early
+    }
+    return ipfs.id(callback)
+  }
 }
 
-},{"./consumer":897,"./local-store":899,"./producer":901,"./start":902}],899:[function(require,module,exports){
+},{"./consumer":897,"./local-store":899,"./producer":901,"./start":902,"events":9}],899:[function(require,module,exports){
 'use strict'
 
 const setImmediate = require('async/setImmediate')
@@ -135622,9 +135805,10 @@ module.exports = (ipfs) => {
 
       const newPeers = peerInfos.map(peerInfoToAddr).sort()
       if (peersChanged(newPeers)) {
+        console.log('have %d peers', newPeers.length)
         peers = newPeers
         console.log('peers changed')
-        emitter.emit('changed')
+        emitter.emit('changed', newPeers)
       }
     })
   }
@@ -135651,12 +135835,11 @@ function peerInfoToAddr (peerInfo) {
 'use strict'
 
 const waterfall = require('async/waterfall')
-const eachSeries = require('async/eachSeries')
 const each = require('async/each')
 const topicName = require('./topic-name')
 const Peers = require('./peers')
 
-module.exports = (store, ipfs) => {
+module.exports = (store, ipfs, node) => {
   const peers = Peers(ipfs)
   peers.on('changed', onPeersChange)
 
@@ -135683,6 +135866,13 @@ module.exports = (store, ipfs) => {
         },
 
         (node, callback) => {
+          console.log('ipfs.object.get')
+          ipfs.object.get(node.multihash, (err, obj) => {
+            callback(err, node)
+          })
+        },
+
+        (node, callback) => {
           const mh = node.multihash
           console.log('setting head of %s to', topic, mh)
           store.setHead(topic, mh, (err) => {
@@ -135691,60 +135881,71 @@ module.exports = (store, ipfs) => {
         },
 
         (mh, callback) => {
-          console.log('PUBLISHING topic %s', topic, mh)
-          ipfs.pubsub.publish(topic, mh, callback)
+          // TODO: we shouldn't need to keep publishing
+          setInterval(() => ipfs.pubsub.publish(topic, mh, (err) => {
+            console.log('PUBLISHING topic %s', topic, mh)
+            if (err) {
+              // TODO: handle error
+              throw err
+            }
+          }), 1000)
+          callback()
         }
       ],
       callback
     )
   }
 
-  function onPeersChange () {
-    store.topics((err, topics) => {
-      if (err) {
-        console.error('peer poller: error getting topics', err)
-        return // early
-      }
-      eachSeries(
-        topics,
-        (topic, callback) => {
-          each(
-            pubSubDelays(),
-            publishWithDelay.bind(null, topic),
-            callback
-          )
-        },
-        (err) => {
-          if (err) {
-            console.error('peer poller: error head for topics', err)
-          }
-        }
-      )
-
-      function publishWithDelay (topic, delay, callback) {
-        // fix: do I really need a delay?
-        setTimeout(() => {
-          store.headForTopic(topic, (err, head) => {
-            if (err) {
-              callback(err)
-            } else {
-              console.log('(2) PUBLISHING topic %s', topic, head)
-              ipfs.pubsub.publish(topic, head, callback)
-            }
-          })
-        }, delay)
-      }
-    })
+  function onPeersChange (peers) {
+    node.emit('peers changed', peers)
   }
+
+  // function onPeersChange () {
+  //   store.topics((err, topics) => {
+  //     if (err) {
+  //       console.error('peer poller: error getting topics', err)
+  //       return // early
+  //     }
+  //     each(
+  //       topics,
+  //       (topic, callback) => {
+  //         each(
+  //           pubSubDelays(),
+  //           publishWithDelay.bind(null, topic),
+  //           callback
+  //         )
+  //       },
+  //       (err) => {
+  //         if (err) {
+  //           console.error('peer poller: error head for topics', err)
+  //         }
+  //       }
+  //     )
+
+  //     function publishWithDelay (topic, delay, callback) {
+  //       // fix: do I really need a delay?
+  //       setTimeout(() => {
+  //         store.headForTopic(topic, (err, head) => {
+  //           if (err) {
+  //             callback(err)
+  //           } else {
+  //             console.log('(2) PUBLISHING topic %s', topic, head)
+  //             ipfs.pubsub.publish(topic, head, callback)
+  //           }
+  //         })
+  //       }, delay)
+  //     }
+  //   })
+  // }
 }
 
 function pubSubDelays () {
   // TODO: this is ugly:
-  return [1000, 3000, 6000]
+  return [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 11000, 12000]
 }
 
 }).call(this,require("buffer").Buffer)
-},{"./peers":900,"./topic-name":903,"async/each":82,"async/eachSeries":87,"async/waterfall":115,"buffer":7}],902:[function(require,module,exports){
+},{"./peers":900,"./topic-name":903,"async/each":82,"async/waterfall":115,"buffer":7}],902:[function(require,module,exports){
 'use strict'
 
 const IPFS = require('ipfs')
@@ -135781,12 +135982,13 @@ module.exports = function start (store, _callback) {
   }
 
   function onReady () {
+    console.log('IPFS ready')
     store.start(callback)
   }
 }
 
 function repoPath () {
-  return 'temp/ipfs-' + Math.random()
+  return 'temp/ipfs-iifs-producer-' + Math.random()
 }
 
 },{"ipfs":378}],903:[function(require,module,exports){
@@ -135794,6 +135996,6 @@ function repoPath () {
 
 const PREFIX = 'iifs:annotations:'
 
-module.exports = (name) => name//PREFIX + name
+module.exports = (name) => PREFIX + name
 
 },{}]},{},[57]);

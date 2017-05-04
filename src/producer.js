@@ -1,12 +1,11 @@
 'use strict'
 
 const waterfall = require('async/waterfall')
-const eachSeries = require('async/eachSeries')
 const each = require('async/each')
 const topicName = require('./topic-name')
 const Peers = require('./peers')
 
-module.exports = (store, ipfs) => {
+module.exports = (store, ipfs, node) => {
   const peers = Peers(ipfs)
   peers.on('changed', onPeersChange)
 
@@ -33,6 +32,13 @@ module.exports = (store, ipfs) => {
         },
 
         (node, callback) => {
+          console.log('ipfs.object.get')
+          ipfs.object.get(node.multihash, (err, obj) => {
+            callback(err, node)
+          })
+        },
+
+        (node, callback) => {
           const mh = node.multihash
           console.log('setting head of %s to', topic, mh)
           store.setHead(topic, mh, (err) => {
@@ -41,54 +47,65 @@ module.exports = (store, ipfs) => {
         },
 
         (mh, callback) => {
-          console.log('PUBLISHING topic %s', topic, mh)
-          ipfs.pubsub.publish(topic, mh, callback)
+          // TODO: we shouldn't need to keep publishing
+          setInterval(() => ipfs.pubsub.publish(topic, mh, (err) => {
+            console.log('PUBLISHING topic %s', topic, mh)
+            if (err) {
+              // TODO: handle error
+              throw err
+            }
+          }), 1000)
+          callback()
         }
       ],
       callback
     )
   }
 
-  function onPeersChange () {
-    store.topics((err, topics) => {
-      if (err) {
-        console.error('peer poller: error getting topics', err)
-        return // early
-      }
-      eachSeries(
-        topics,
-        (topic, callback) => {
-          each(
-            pubSubDelays(),
-            publishWithDelay.bind(null, topic),
-            callback
-          )
-        },
-        (err) => {
-          if (err) {
-            console.error('peer poller: error head for topics', err)
-          }
-        }
-      )
-
-      function publishWithDelay (topic, delay, callback) {
-        // fix: do I really need a delay?
-        setTimeout(() => {
-          store.headForTopic(topic, (err, head) => {
-            if (err) {
-              callback(err)
-            } else {
-              console.log('(2) PUBLISHING topic %s', topic, head)
-              ipfs.pubsub.publish(topic, head, callback)
-            }
-          })
-        }, delay)
-      }
-    })
+  function onPeersChange (peers) {
+    node.emit('peers changed', peers)
   }
+
+  // function onPeersChange () {
+  //   store.topics((err, topics) => {
+  //     if (err) {
+  //       console.error('peer poller: error getting topics', err)
+  //       return // early
+  //     }
+  //     each(
+  //       topics,
+  //       (topic, callback) => {
+  //         each(
+  //           pubSubDelays(),
+  //           publishWithDelay.bind(null, topic),
+  //           callback
+  //         )
+  //       },
+  //       (err) => {
+  //         if (err) {
+  //           console.error('peer poller: error head for topics', err)
+  //         }
+  //       }
+  //     )
+
+  //     function publishWithDelay (topic, delay, callback) {
+  //       // fix: do I really need a delay?
+  //       setTimeout(() => {
+  //         store.headForTopic(topic, (err, head) => {
+  //           if (err) {
+  //             callback(err)
+  //           } else {
+  //             console.log('(2) PUBLISHING topic %s', topic, head)
+  //             ipfs.pubsub.publish(topic, head, callback)
+  //           }
+  //         })
+  //       }, delay)
+  //     }
+  //   })
+  // }
 }
 
 function pubSubDelays () {
   // TODO: this is ugly:
-  return [1000, 3000, 6000]
+  return [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 11000, 12000]
 }

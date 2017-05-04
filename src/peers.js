@@ -26,8 +26,7 @@ module.exports = (ipfs) => {
       const newPeers = peerInfos.map(peerInfoToAddr).sort()
       if (peersChanged(newPeers)) {
         peers = newPeers
-        console.log('peers changed')
-        emitter.emit('changed')
+        emitter.emit('changed', newPeers)
       }
     })
   }
