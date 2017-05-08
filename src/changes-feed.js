@@ -6,6 +6,7 @@ const topicName = require('./topic-name')
 module.exports = (id, store, ipfs) => {
   const topic = topicName(id)
   const emitter = new Emitter()
+  let latestVersion = -1
 
   emitter.cancel = cancel
 
@@ -14,6 +15,9 @@ module.exports = (id, store, ipfs) => {
   return emitter
 
   function onNewHead (head) {
+    if (head.version <= latestVersion) {
+      return // early
+    }
     console.log('NEW HEAD', head.hash)
     ipfs.object.get(head.hash, { enc: 'base58' }, (err, node) => {
       if (err) {
