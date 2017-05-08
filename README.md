@@ -20,8 +20,10 @@ const DB = require('ipfs-iiif-db')
 ## instantiate
 
 ```js
-const db = DB()
+const db = DB([options])
 ```
+
+This constructor takes one optional argument: a [js-ipfs options object](https://github.com/ipfs/js-ipfs#advanced-options-when-creating-an-ipfs-node).
 
 ## start
 

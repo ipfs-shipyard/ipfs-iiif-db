@@ -6,7 +6,7 @@ const Consumer = require('./consumer')
 const HeadStore = require('./head-store')
 const Emitter = require('events')
 
-module.exports = () => {
+module.exports = (options) => {
   let ipfs, producer, consumer
   const store = HeadStore()
 
@@ -30,7 +30,7 @@ module.exports = () => {
       return // early
     }
 
-    ipfs = start(store, (err) => {
+    ipfs = start(store, options, (err) => {
       if (err) {
         callback(err)
         return // early

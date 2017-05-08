@@ -17784,7 +17784,7 @@ const Consumer = require('./consumer')
 const HeadStore = require('./head-store')
 const Emitter = require('events')
 
-module.exports = () => {
+module.exports = (options) => {
   let ipfs, producer, consumer
   const store = HeadStore()
 
@@ -17808,7 +17808,7 @@ module.exports = () => {
       return // early
     }
 
-    ipfs = start(store, (err) => {
+    ipfs = start(store, options, (err) => {
       if (err) {
         callback(err)
         return // early
@@ -18067,21 +18067,23 @@ function pubSubDelays () {
 
 const IPFS = require('ipfs')
 
-module.exports = function start (store, _callback) {
-  const options = {
-    repo: repoPath(),
-    config: {
-      Addresses: {
-        Swarm: [
-          '/libp2p-webrtc-star/dns4/star-signal.cloud.ipfs.team/wss'
-        ]
-      }
-    },
-    EXPERIMENTAL: {
-      pubsub: true
+const DEFAULT_OPTIONS = {
+  config: {
+    Addresses: {
+      Swarm: [
+        '/libp2p-webrtc-star/dns4/star-signal.cloud.ipfs.team/wss'
+      ]
     }
+  },
+  EXPERIMENTAL: {
+    pubsub: true
   }
+}
 
+module.exports = function start (store, _options, _callback) {
+  const options = Object.assign({
+    repo: repoPath()
+  }, DEFAULT_OPTIONS, _options)
 
   const ipfs = new IPFS(options)
 
