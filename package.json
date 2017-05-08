@@ -1,7 +1,7 @@
 {
-  "name": "ipfs-iiif-annotations",
+  "name": "ipfs-iiif-db",
   "version": "0.0.1",
-  "description": "IIIF annotations JS client over IPFS",
+  "description": "IIIF DB over IPFS",
   "main": "src/index.js",
   "scripts": {
     "lint": "aegir-lint",
@@ -11,19 +11,19 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pgte/ipfs-iiif-annotations.git"
+    "url": "git+https://github.com/pgte/ipfs-iiif-DB.git"
   },
   "keywords": [
     "ipfs",
     "iiif",
-    "annotations"
+    "DB"
   ],
   "author": "Pedro Teixeira <i@pgte.me>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/pgte/ipfs-iiif-annotations/issues"
+    "url": "https://github.com/pgte/ipfs-iiif-DB/issues"
   },
-  "homepage": "https://github.com/pgte/ipfs-iiif-annotations#readme",
+  "homepage": "https://github.com/pgte/ipfs-iiif-DB#readme",
   "dependencies": {
     "async": "^2.3.0",
     "ipfs": "^0.23.1",
