@@ -17528,6 +17528,7 @@ module.exports = (id, store, ipfs) => {
     if (head.version <= latestVersion) {
       return // early
     }
+    latestVersion = head.version
     ipfs.object.get(head.hash, { enc: 'base58' }, (err, node) => {
       if (err) {
         // TODO: handle error
