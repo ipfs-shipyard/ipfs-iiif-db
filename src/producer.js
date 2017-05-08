@@ -28,7 +28,6 @@ module.exports = (store, ipfs, node) => {
     waterfall(
       [
         (callback) => {
-          console.log('ipfs.object.put')
           ipfs.object.put({
             Data: new Buffer(JSON.stringify(data)),
             Links: [] // fix

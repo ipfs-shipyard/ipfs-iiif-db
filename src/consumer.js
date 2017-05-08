@@ -25,7 +25,6 @@ module.exports = (store, ipfs) => {
   }
 
   function createSubscription (topic) {
-    console.log('pubsub: subscribing topic', topic)
     ipfs.pubsub.subscribe(topic, handleMessage)
     const emitter = new Emitter()
 
@@ -33,17 +32,13 @@ module.exports = (store, ipfs) => {
 
     function handleMessage (message) {
       const head = JSON.parse(message.data.toString())
-      console.log('new version on pubsub: %d', head.version)
       store.getHead(topic, (err, previousHead) => {
         if (err) {
           throw err
         }
-        console.log('previous version is %d', previousHead && previousHead.version)
         if (previousHead && previousHead.version > head.version) {
           return // early
         }
-
-        console.log('have a new head for topic %s. Setting it..', topic)
 
         store.setHead(topic, head.version, head.hash, (err) => {
           // todo: handle error
@@ -69,8 +64,6 @@ module.exports = (store, ipfs) => {
         return // early
       }
 
-      console.log('head for topic %s is ', topic, head)
-
       if (!head) {
         subscription.once('head', (head) => {
           callback(null, head)
@@ -90,7 +83,6 @@ module.exports = (store, ipfs) => {
       listenForChanges = false
     }
 
-    console.trace('callback:', callback)
     getHead(id, (err, head) => {
       if (err) {
         callback(err)
@@ -105,9 +97,7 @@ module.exports = (store, ipfs) => {
   }
 
   function getFromHash (hash, callback) {
-    console.log('get from hash', hash)
     ipfs.object.get(hash, { enc: 'base58' }, (err, object) => {
-      console.log('got from hash', err, object)
       if (err) {
         callback(err)
         return // early

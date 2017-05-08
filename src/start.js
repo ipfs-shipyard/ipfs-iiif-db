@@ -22,8 +22,6 @@ module.exports = function start (store, _options, _callback) {
 
   const ipfs = new IPFS(options)
 
-  console.log('IPFS:', ipfs)
-
   ipfs.on('error', callback)
   ipfs.on('ready', onReady)
 
@@ -36,7 +34,6 @@ module.exports = function start (store, _options, _callback) {
   }
 
   function onReady () {
-    console.log('IPFS ready')
     store.start(callback)
   }
 }
