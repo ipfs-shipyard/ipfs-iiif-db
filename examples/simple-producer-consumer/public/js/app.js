@@ -17528,7 +17528,6 @@ module.exports = (id, store, ipfs) => {
     if (head.version <= latestVersion) {
       return // early
     }
-    console.log('NEW HEAD', head.hash)
     ipfs.object.get(head.hash, { enc: 'base58' }, (err, node) => {
       if (err) {
         // TODO: handle error
@@ -17572,7 +17571,6 @@ module.exports = (store, ipfs) => {
   }
 
   function createSubscription (topic) {
-    console.log('pubsub: subscribing topic', topic)
     ipfs.pubsub.subscribe(topic, handleMessage)
     const emitter = new Emitter()
 
@@ -17580,17 +17578,13 @@ module.exports = (store, ipfs) => {
 
     function handleMessage (message) {
       const head = JSON.parse(message.data.toString())
-      console.log('new version on pubsub: %d', head.version)
       store.getHead(topic, (err, previousHead) => {
         if (err) {
           throw err
         }
-        console.log('previous version is %d', previousHead && previousHead.version)
         if (previousHead && previousHead.version > head.version) {
           return // early
         }
-
-        console.log('have a new head for topic %s. Setting it..', topic)
 
         store.setHead(topic, head.version, head.hash, (err) => {
           // todo: handle error
@@ -17616,8 +17610,6 @@ module.exports = (store, ipfs) => {
         return // early
       }
 
-      console.log('head for topic %s is ', topic, head)
-
       if (!head) {
         subscription.once('head', (head) => {
           callback(null, head)
@@ -17637,7 +17629,6 @@ module.exports = (store, ipfs) => {
       listenForChanges = false
     }
 
-    console.trace('callback:', callback)
     getHead(id, (err, head) => {
       if (err) {
         callback(err)
@@ -17652,9 +17643,7 @@ module.exports = (store, ipfs) => {
   }
 
   function getFromHash (hash, callback) {
-    console.log('get from hash', hash)
     ipfs.object.get(hash, { enc: 'base58' }, (err, object) => {
-      console.log('got from hash', err, object)
       if (err) {
         callback(err)
         return // early
@@ -17985,7 +17974,6 @@ module.exports = (store, ipfs, node) => {
     waterfall(
       [
         (callback) => {
-          console.log('ipfs.object.put')
           ipfs.object.put({
             Data: new Buffer(JSON.stringify(data)),
             Links: [] // fix
@@ -18091,8 +18079,6 @@ module.exports = function start (store, _options, _callback) {
 
   const ipfs = new IPFS(options)
 
-  console.log('IPFS:', ipfs)
-
   ipfs.on('error', callback)
   ipfs.on('ready', onReady)
 
@@ -18105,7 +18091,6 @@ module.exports = function start (store, _options, _callback) {
   }
 
   function onReady () {
-    console.log('IPFS ready')
     store.start(callback)
   }
 }
