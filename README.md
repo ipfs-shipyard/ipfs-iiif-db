@@ -82,14 +82,6 @@ You can close this changes feed:
 changes.close()
 ```
 
-#### Cancel subscription
-
-The consumer `onChange` function returns a subscription object that you can cancel:
-
-```js
-subscription.cancel()
-```
-
 
 ### stop
 
