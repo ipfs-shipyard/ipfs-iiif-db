@@ -13,9 +13,25 @@ $ npm install ipfs-iiif-db --save
 ## Import
 
 
+In thr browser environment, you can either use this library by including it and bundling your app together with it (using browserify or webpack, for instance), or you can
+
+### in Node.js or in a browser with a bundler:
+
 ```js
 const DB = require('ipfs-iiif-db')
 ```
+
+### Using a script tag in a browser
+
+```html
+<!-- loading the minified version -->
+<script src="https://unpkg.com/ipfs-iiif-db/dist/index.min.js"></script>
+
+<!-- loading the human-readable (not minified) version -->
+<script src="https://unpkg.com/ipfs-iiif-db/dist/index.js"></script>
+```
+
+Now you can access this library using the `IpfsIiifDb` on the global namespace. (In this case, replace `DB` on the examples below with `IpfsIiifDb`).
 
 ## instantiate
 
