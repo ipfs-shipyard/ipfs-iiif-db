@@ -180,6 +180,8 @@ console.log('current annotation list is: %j', annotationList.toJSON())
 
 ### "mutation" (event)
 
+Emitted whenever anything in the annotation list changes.
+
 ```js
 annotationList.on('mutation', (event) => {
   console.log('new mutation', event)
@@ -190,10 +192,18 @@ annotationList.on('mutation', (event) => {
 Callback arguments:
 
 * event (object):
-  * type (string): can be 'add', 'update' or 'delete'
+  * type (string): can either be:
+    * 'add' - for when a direct attribute is added
+    * 'update' - for when a direct attribute value is updated
+    * 'delete' - for when a direct attribute is deleted
+    * 'resource inserted' - for when an item is inserted in the `resources` array
+    * 'resource deleted' - for when an item is deleted from the `resources` array
+    * 'hit inserted' - for when an item is inserted in the `hits` array
+    * 'hit deleted' - for when an item is deleted from the `resources` array
   * name (string): the attribute name
   * value (object): the new value, if applicable
   * oldValue (object): the previous value, if applicable
+  * index (integer): index of the insertion or deletion
 
 ### "add" (event)
 
