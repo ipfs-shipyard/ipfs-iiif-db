@@ -21,17 +21,48 @@
             <button id="start" type="button">Start IPFS</button>
             <button id="stop" disabled type="button">Stop IPFS</button>
           </div>
+          <div id="details" class="disabled">
+            <h2>Your daemon</h2>
+            <h3>ID</h3>
+            <pre class='id-container'>N/A</pre>
+            <h3>Addresses</h3>
+            <ul class='addresses-container'>
+              <li>Not yet online</li>
+            </ul>
+          </div>
+        </div>
+        <div class="right">
+          <div id="peers-panel" class="disabled">
+
+            <h2>Room</h2>
+            <p id="room-id"></p>
+
+            <h3>Peers</h3>
+            <ul id="peers"></ul>
+
+          </div>
         </div>
 
         <div class="clear"></div>
-        <button id="add">Add</button>
-        <button id="remove">Remove</button>
+        <div id="files">
+          <div class="multihash-wrapper">
+            <button id="add">Add</button>
+            <button id="remove">Remove</button>
+            <div class="clear"></div>
+          </div>
+        </div>
 
         <div class="clear"></div>
-        <pre id="value"></pre>
+        <div id="files">
+          <pre id="value"></pre>
+        </div>
 
+
+        <div class="clear"></div>
         <pre id="errors" class="hidden"></pre>
       </div>
+
+      <div class="clear"></div>
     </div>
 
     <!-- The IPFS node module -->

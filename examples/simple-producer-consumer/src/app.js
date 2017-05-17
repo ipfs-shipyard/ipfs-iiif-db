@@ -11,6 +11,9 @@ const $header = document.querySelector('.header')
 const $body = document.querySelector('body')
 const $idContainer = document.querySelector('.id-container')
 const $addressesContainer = document.querySelector('.addresses-container')
+const $roomId = document.getElementById('room-id')
+const $peersPanel = document.getElementById('peers-panel')
+const $peers = document.getElementById('peers')
 const $details = document.getElementById('details')
 const $allDisabledButtons = document.querySelectorAll('button:disabled')
 const $allDisabledInputs = document.querySelectorAll('input:disabled')
@@ -29,19 +32,21 @@ let annotationList
  */
 
 function start () {
-  if (!db) {
-    db = DB()
+  db = DB()
 
-    annotationList = db.annotationList('id', original)
-    updateValue(annotationList)
+  db.ipfs.once('ready', () => updateView('ready'))
 
-    annotationList.on('mutation', (event) => {
-      console.log('MUTATION:', event)
-      updateValue(annotationList)
-    })
+  annotationList = db.annotationList('id', original)
 
-    updateView('starting')
-  }
+  annotationList.room.on('peer joined', updateRoomPeers)
+  annotationList.room.on('peer left', updateRoomPeers)
+
+  annotationList.on('mutation', (event) => {
+    updateValue()
+  })
+
+  updateView('starting')
+  updateValue()
 }
 
 function stop () {
@@ -55,7 +60,6 @@ function stop () {
 
 function add () {
   const annotation = annotations[Math.floor(Math.random() * annotations.length)]
-  console.log('going to push annotation', annotation)
   annotationList.pushResource(annotation)
 }
 
@@ -67,9 +71,19 @@ function remove () {
   }
 }
 
-function updateValue (annotationList) {
-  console.log('updateValue', annotationList)
-  $value.innerHTML = JSON.stringify(annotationList.toJSON(), null, '\t')
+function updateValue () {
+  $value.innerHTML = annotationList && JSON.stringify(annotationList.toJSON(), null, '\t')
+}
+
+function updateRoomPeers () {
+  if (!annotationList) {
+    return
+  }
+  console.log('€€€€ updateRoomPeers')
+  $roomId.innerHTML = annotationList.room.id()
+  $peers.innerHTML = annotationList.room.peers().map((peer) => {
+    return '<li><span class="address">' + peer + '</span></li>'
+  }).join('')
 }
 
 function onError (err) {
@@ -92,14 +106,9 @@ window.onerror = onError
  */
 const states = {
   ready: () => {
-    const addressesHtml = peerInfo.addresses.map((address) => {
-      return '<li><span class="address">' + address + '</span></li>'
-    }).join('')
-    $idContainer.innerText = peerInfo.id
-    $addressesContainer.innerHTML = addressesHtml
     $allDisabledButtons.forEach(b => { b.disabled = false })
     $allDisabledInputs.forEach(b => { b.disabled = false })
-    $peers.className = ''
+    $peersPanel.className = ''
     $details.className = ''
     $stopButton.disabled = false
     $startButton.disabled = true

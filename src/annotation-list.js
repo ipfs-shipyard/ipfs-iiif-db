@@ -1,7 +1,7 @@
 'use strict'
 
 const Y = require('yjs')
-const Queue = require('async/queue')
+const EventEmitter = require('events')
 const Wrapper = require('./wrapper')
 
 const ARRAY_KEYS = ['resources', 'hits']
@@ -13,7 +13,8 @@ module.exports = (ipfs) => {
   })
 
   return (id, original) => {
-    const wrapper = new AnnotationListWrapper(original)
+    const roomEmitter = new EventEmitter()
+    const wrapper = new AnnotationListWrapper(roomEmitter, original)
 
     const onceIpfsReady = () => {
       Y({
@@ -23,7 +24,8 @@ module.exports = (ipfs) => {
         connector: {
           name: 'ipfs', // use the IPFS connector
           ipfs: ipfs,
-          room: id
+          room: id,
+          roomEmitter: roomEmitter
         },
         share: {
           annotationList: 'Map', // y.share.annotationList is of type Y.Map
@@ -64,21 +66,12 @@ module.exports = (ipfs) => {
 }
 
 class AnnotationListWrapper extends Wrapper {
-  constructor (originalValue) {
-    super()
+
+  constructor (roomEmitter, originalValue) {
+    super(roomEmitter)
     this._originalValue = originalValue || {}
-    this._mutationQueue = Queue((fn, callback) => {
-      if (this._started) {
-        fn()
-        callback()
-      } else {
-        this.once('started', () => {
-          fn()
-          callback()
-        })
-      }
-    }, 1)
   }
+
   _start (share) {
     this._originalValue = undefined
     this._share = share
@@ -172,11 +165,5 @@ class AnnotationListWrapper extends Wrapper {
     })
 
     return ret
-  }
-
-  // mutations
-
-  _queueMutation (fn) {
-    this._mutationQueue.push(fn)
   }
 }
