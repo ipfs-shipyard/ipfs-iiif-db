@@ -24,9 +24,9 @@
   "homepage": "https://github.com/pgte/ipfs-iiif-DB#readme",
   "dependencies": {
     "async": "^2.4.0",
-    "ipfs": "^0.23.1",
+    "ipfs": "git+https://git@github.com/ipfs/js-ipfs.git",
     "y-array": "^10.1.0",
-    "y-ipfs": "*",
+    "y-ipfs": "^0.1.0",
     "y-map": "^10.1.0",
     "y-memory": "^8.0.8",
     "yjs": "^12.3.0"
