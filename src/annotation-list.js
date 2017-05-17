@@ -5,6 +5,10 @@ const EventEmitter = require('events')
 const Wrapper = require('./wrapper')
 
 const ARRAY_KEYS = ['resources', 'hits']
+const EVENT_PREFIXES = {
+  resources: 'resource',
+  hits: 'hit'
+}
 
 module.exports = (ipfs) => {
   let ready = false
@@ -78,6 +82,7 @@ class AnnotationListWrapper extends Wrapper {
 
     share.annotationList.observe((event) => {
       const ev = {
+        type: event.type,
         name: event.name,
         value: event.value,
         oldValue: event.oldValue
@@ -87,8 +92,9 @@ class AnnotationListWrapper extends Wrapper {
     })
 
     ARRAY_KEYS.forEach((key) => {
+      const eventPrefix = eventPrefixFor(key)
       share[key].observe((event) => {
-        let eventType = event.type === 'insert' ?  key + ' inserted' : key + ' deleted';
+        let eventType = event.type === 'insert' ?  eventPrefix + ' inserted' : eventPrefix + ' deleted';
         (event.values || event.oldValues).forEach((value) => {
           const ev = {
             type: eventType,
@@ -166,4 +172,8 @@ class AnnotationListWrapper extends Wrapper {
 
     return ret
   }
+}
+
+function eventPrefixFor (key) {
+  return EVENT_PREFIXES[key]
 }
