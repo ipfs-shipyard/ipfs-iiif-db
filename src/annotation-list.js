@@ -31,8 +31,6 @@ module.exports = (ipfs) => {
           hits: 'Array'
         }
       }).then(function (y) {
-        const annotationList = y.share.annotationList
-
         // resources
         const originalResources = original.resources || []
         originalResources.forEach((resource) => {
@@ -47,7 +45,7 @@ module.exports = (ipfs) => {
 
         Object.keys(original).forEach((key) => {
           if (original.hasOwnProperty(key) && ARRAY_KEYS.indexOf(key) < 0) {
-            annotationList.set(key, original[key])
+            y.share.annotationList.set(key, original[key])
           }
         })
 
