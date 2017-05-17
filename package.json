@@ -1,13 +1,11 @@
 {
   "name": "ipfs-iiif-db",
-  "version": "0.2.0",
-  "description": "IIIF DB over IPFS",
+  "version": "1.0.0",
+  "description": "IIIF Annotations DB over IPFS",
   "main": "src/index.js",
   "scripts": {
     "lint": "aegir-lint",
-    "build": "aegir-build",
-    "test": "npm run test:node",
-    "test:node": "mocha"
+    "build": "aegir-build"
   },
   "repository": {
     "type": "git",
@@ -25,18 +23,18 @@
   },
   "homepage": "https://github.com/pgte/ipfs-iiif-DB#readme",
   "dependencies": {
-    "async": "^2.3.0",
+    "async": "^2.4.0",
     "ipfs": "^0.23.1",
-    "ipfs-api": "^14.0.0"
+    "y-array": "^10.1.0",
+    "y-ipfs": "*",
+    "y-map": "^10.1.0",
+    "y-memory": "^8.0.8",
+    "yjs": "^12.3.0"
   },
   "devDependencies": {
-    "aegir": "^11.0.1",
-    "chai": "^3.5.0",
-    "dirty-chai": "^1.2.2",
     "pre-commit": "^1.2.2"
   },
   "pre-commit": [
-    "lint",
-    "test"
+    "lint"
   ]
 }
