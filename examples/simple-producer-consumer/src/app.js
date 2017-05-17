@@ -26,6 +26,7 @@ const annotations = require('./samples/annotations')
 
 let db
 let annotationList
+let peerInfo
 
 /*
  * Start and stop the IPFS node
@@ -34,7 +35,16 @@ let annotationList
 function start () {
   db = DB()
 
-  db.ipfs.once('ready', () => updateView('ready'))
+  db.ipfs.once('ready', () => {
+    db.ipfs.id((err, _peerInfo) => {
+      if (err) {
+        throw err
+      }
+      peerInfo = _peerInfo
+      updateView('ready')
+    })
+
+  })
 
   annotationList = db.annotationList('id', original)
 
@@ -106,6 +116,11 @@ window.onerror = onError
  */
 const states = {
   ready: () => {
+    const addressesHtml = peerInfo.addresses.map((address) => {
+      return '<li><span class="address">' + address + '</span></li>'
+    }).join('')
+    $addressesContainer.innerHTML = addressesHtml
+    $idContainer.innerHTML = peerInfo.id
     $allDisabledButtons.forEach(b => { b.disabled = false })
     $allDisabledInputs.forEach(b => { b.disabled = false })
     $peersPanel.className = ''
