@@ -33,63 +33,266 @@ const DB = require('ipfs-iiif-db')
 
 Now you can access this library using the `IpfsIiifDb` on the global namespace. (In this case, replace `DB` on the examples below with `IpfsIiifDb`).
 
-## instantiate
+## Instantiate
 
 ```js
 const db = DB([options])
 ```
 
-This constructor takes one optional argument: a [js-ipfs options object](https://github.com/ipfs/js-ipfs#advanced-options-when-creating-an-ipfs-node).
+Arguments:
+* options (object):
+  * ipfs: a [js-ipfs options object](https://github.com/ipfs/js-ipfs#advanced-options-when-creating-an-ipfs-node)
 
-## start
+# Annotation list
 
-
-```js
-db.start([callback])
-```
-
-## produce a change
+Get an annotations object:
 
 ```js
-db.put(id, value, callback)
+const annotationList = db.annotationList(id [, originalAnnotationList])
 ```
 
-The id needs to be a string, but the value can be any JS object that can be represented in JSON.
+Arguments:
 
-## get latest
+* id (string, mandatory): the unique id of this annotation list
+* originalAnnotationList (object): the annotation list
 
-```
-db.get(id, callback)
-```
 
-#### Listen for changes
+## annotationList API:
 
-To listen for changes you must pass a second argument to `get` with the value `true`. This will return a changes feed you can listen on:
+### annotationList.set (key, value)
+
+Set a annotation list attribute `key` to a given value
 
 ```js
-const changes = db.get(id, true, (value) => {
-  console.log('new value is: %j', newValue)
+annotationList.set('@context', 'http://iiif.io/api/search/0/context.json')
+```
+
+### annotationList.pushResource (resource)
+
+Insert a resource at the end of the `resources` array.
+
+```js
+annotationList.pushResource({
+  "@id": "https://wellcomelibrary.org/iiif/b18035723/annos/searchResults/a2h0r885,2553,282,46",
+  "@type": "oa:Annotation",
+  "motivation": "sc:painting",
+  "resource": {
+    "@type": "cnt:ContentAsText",
+    "chars": "gediegenen"
+  },
+  "on": "https://wellcomelibrary.org/iiif/b18035723/canvas/c2#xywh=885,2553,282,46"
 })
+```
 
-changes.on('change', (newValue) => {
-  console.log('new value is: %j', newValue)
+### putResource (index, resource)
+
+Insert a resource at the given position inside the `resources` array.
+
+```js
+annotationList.putResource(3, {
+  "@id": "https://wellcomelibrary.org/iiif/b18035723/annos/searchResults/a2h0r885,2553,282,46",
+  "@type": "oa:Annotation",
+  "motivation": "sc:painting",
+  "resource": {
+    "@type": "cnt:ContentAsText",
+    "chars": "gediegenen"
+  },
+  "on": "https://wellcomelibrary.org/iiif/b18035723/canvas/c2#xywh=885,2553,282,46"
 })
 ```
 
-You can close this changes feed:
+### deleteResourceAt (index)
+
+Delete the resource at the given `index` position.
 
 ```js
-changes.close()
+annotationList.deleteResourceAt(3)
+```
+
+### getResources ()
+
+Return the `resources` array.
+
+```js
+annotationList.getResources()
+```
+
+### pushHit (hit)
+
+Insert a hit at the end of the `hits` array.
+
+```js
+annotationList.pushHit({
+  "@id": "https://wellcomelibrary.org/iiif/b18035723/annos/searchResults/a2h0r885,2553,282,46",
+  "@type": "oa:Annotation",
+  "motivation": "sc:painting",
+  "resource": {
+    "@type": "cnt:ContentAsText",
+    "chars": "gediegenen"
+  },
+  "on": "https://wellcomelibrary.org/iiif/b18035723/canvas/c2#xywh=885,2553,282,46"
+})
+```
+
+### putHit (index, hit)
+
+Insert a hit at the given position inside the `hits` array.
+
+```js
+annotationList.putHit(3, {
+  "@id": "https://wellcomelibrary.org/iiif/b18035723/annos/searchResults/a2h0r885,2553,282,46",
+  "@type": "oa:Annotation",
+  "motivation": "sc:painting",
+  "resource": {
+    "@type": "cnt:ContentAsText",
+    "chars": "gediegenen"
+  },
+  "on": "https://wellcomelibrary.org/iiif/b18035723/canvas/c2#xywh=885,2553,282,46"
+})
+```
+
+### deleteHitAt (index)
+
+Delete the hit at the given `index` position.
+
+```js
+annotationList.deleteHit(3)
+```
+
+### getHits ()
+
+Return the `hits` array.
+
+```js
+annotationList.getHits()
+```
+
+### toJSON ()
+
+Returns an object representation of the annotation list.
+
+```js
+console.log('current annotation list is: %j', annotationList.toJSON())
 ```
 
 
-### stop
+## AnnotationList Events
 
+### "mutation" (event)
+
+Emitted whenever anything in the annotation list changes.
 
 ```js
-db.stop([callback])
+annotationList.on('mutation', (event) => {
+  console.log('new mutation', event)
+  console.log('annotation list now is:', annotationList.toJSON())
+})
 ```
 
+Callback arguments:
+
+* event (object):
+  * type (string): can either be:
+    * 'add' - for when a direct attribute is added
+    * 'update' - for when a direct attribute value is updated
+    * 'delete' - for when a direct attribute is deleted
+    * 'resource inserted' - for when an item is inserted in the `resources` array
+    * 'resource deleted' - for when an item is deleted from the `resources` array
+    * 'hit inserted' - for when an item is inserted in the `hits` array
+    * 'hit deleted' - for when an item is deleted from the `resources` array
+  * name (string): the attribute name
+  * value (object): the new value, if applicable
+  * oldValue (object): the previous value, if applicable
+  * index (integer): index of the insertion or deletion
+
+### "add" (event)
+
+```js
+annotationList.on('add', (event) => {
+  console.log('added attribute', event.name)
+  console.log('with value:', event.value)
+})
+```
+
+Callback arguments:
+
+* event (object):
+  * name (string): the attribute name
+  * value (object): the value of the attribute
+
+
+### "update" (event)
+
+```js
+annotationList.on('update', (event) => {
+  console.log('updated attribute', event.name)
+  console.log('old value:', event.oldValue)
+  console.log('new value:', event.value)
+})
+```
+
+Callback arguments:
+
+* event (object):
+  * name (string): the attribute name
+  * value (object): the new value of the attribute
+  * oldValue (object): the old value of the attribute
+
+
+### "delete" (event)
+
+```js
+annotationList.on('delete', (event) => {
+  console.log('deleted attribute', event.name)
+  console.log('old value:', event.oldValue)
+})
+```
+
+Callback arguments:
+
+* event (object):
+  * name (string): the attribute name
+  * oldValue (object): the old value of the attribute
+
+
+### "resource inserted" (event)
+
+```js
+annotationList.on('resource inserted', (event) => {
+  console.log('inserted resource at pos', event.index)
+  console.log('with value:', event.value)
+})
+```
+
+Callback arguments:
+
+* event (object):
+  * index (interger >= 0): the array index the insertion was done on
+  * value (object): the value that was inserted
+
+
+### "resource deleted" (event)
+
+Callback arguments:
+
+* event (object):
+  * index (interger >= 0): the array index that was removed
+
+### "hit inserted" (event)
+
+Callback arguments:
+
+* event (object):
+  * index (interger >= 0): the array index the insertion was done on
+  * value (object): the value that was inserted
+
+
+### "hit deleted" (event)
+
+Callback arguments:
+
+* event (object):
+  * index (interger >= 0): the array index that was removed
 
 # License
 

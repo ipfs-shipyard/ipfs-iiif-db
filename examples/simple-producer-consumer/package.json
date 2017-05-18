@@ -2,7 +2,7 @@
   "name": "simple-producer-consumer",
   "version": "0.0.1",
   "scripts": {
-    "compile": "browserify src/app.js -o public/js/app.js",
+    "compile": "browserify src/app.js -o public/js/app.js -d",
     "serve": "http-server -c-1 -p 12345 public",
     "start": "npm run compile && npm run serve"
   },

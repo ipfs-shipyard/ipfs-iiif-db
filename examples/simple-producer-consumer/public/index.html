@@ -32,53 +32,38 @@
           </div>
         </div>
         <div class="right">
-          <div id="peers" class="disabled">
-            <h2>Peers</h2>
+          <div id="peers-panel" class="disabled">
+
+            <h2>Room</h2>
+            <p id="room-id"></p>
+
+            <h3>Peers</h3>
+            <ul id="peers"></ul>
+
           </div>
         </div>
 
         <div class="clear"></div>
         <div id="files">
           <div class="multihash-wrapper">
-            <input disabled id="publish-id" type="text" value="ipfs-iiif-db-example"/>
-            <input disabled id="publish-value" type="text"/>
-            <button disabled id="set" type="button">Set value</button>
+            <button id="add">+ resource</button>
+            <button id="remove">- resource</button>
             <div class="clear"></div>
           </div>
+        </div>
+
+        <div class="clear"></div>
+        <div id="files">
+          <h3>Annotation list:</h3>
           <pre id="value"></pre>
         </div>
 
-        <div class="clear"></div>
-        <div id="files">
-          <div class="multihash-wrapper">
-            <input disabled id="iiifid" type="text" value="ipfs-iiif-db-example"/>
-            <button disabled id="get-head" type="button">Get head</button>
-            <div class="clear"></div>
-          </div>
-        </div>
 
         <div class="clear"></div>
-        <div id="files">
-          <div class="multihash-wrapper">
-            <input disabled id="multihash" type="text"/>
-            <button disabled id="get-from-hash" type="button">Get # value</button>
-            <div class="clear"></div>
-          </div>
-          <pre id="get-value"></pre>
-        </div>
-
-        <div class="clear"></div>
-        <div id="files">
-          <div class="multihash-wrapper">
-            <input disabled id="iiifid-full" type="text" value="ipfs-iiif-db-example"/>
-            <button disabled id="get" type="button">Get ID value</button>
-            <div class="clear"></div>
-          </div>
-          <pre id="get-from-id-value"></pre>
-        </div>
-
         <pre id="errors" class="hidden"></pre>
       </div>
+
+      <div class="clear"></div>
     </div>
 
     <!-- The IPFS node module -->
