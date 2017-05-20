@@ -5,7 +5,7 @@ const IPFS = require('ipfs')
 // initialize Y.js mix-ins
 const Y = require('yjs')
 require('y-memory')(Y)
-require('y-ipfs')(Y)
+require('y-ipfs-connector')(Y)
 require('y-array')(Y)
 require('y-map')(Y)
 
@@ -17,8 +17,13 @@ module.exports = (options) => {
     config: {
       Addresses: {
         Swarm: [
-          '/libp2p-webrtc-star/dns4/star-signal.cloud.ipfs.team/wss'
+          '/libp2p-webrtc-star/dns4/127.0.0.1:9090/ws'
         ]
+      },
+      Discovery: {
+        webRTCStar: {
+          Enabled: true
+        }
       }
     },
     EXPERIMENTAL: {
