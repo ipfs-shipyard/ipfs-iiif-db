@@ -17,8 +17,28 @@ module.exports = (ipfs) => {
   })
 
   return (id, original) => {
+    if (typeof id === 'object') {
+      original = id
+      id = original['@id']
+    } else if (!original) {
+      original = {}
+    }
+
+    if (!id) {
+      throw new Error('annotation list needs an id or @id property')
+    }
+
+    if (!original['@id']) {
+      original['@id'] = id
+    }
+
+    if (id !== original['@id']) {
+      throw new Error('id and original[@id] should not be different')
+    }
+
     const roomEmitter = new EventEmitter()
     const wrapper = new AnnotationListWrapper(roomEmitter, original)
+
 
     const onceIpfsReady = () => {
       Y({
