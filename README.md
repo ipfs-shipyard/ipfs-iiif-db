@@ -48,13 +48,14 @@ Arguments:
 Get an annotations object:
 
 ```js
-const annotationList = db.annotationList(id [, originalAnnotationList])
+const annotationList = db.annotationList([originalAnnotationList])
 ```
 
 Arguments:
 
-* id (string, mandatory): the unique id of this annotation list
-* originalAnnotationList (object): the annotation list
+* originalAnnotationList (object): the annotation list. Must contain an '@id' attribute.
+
+If a string is given as first argument, it's assumed as the '@id' attriubute of the annotation list.
 
 
 ## annotationList API:
