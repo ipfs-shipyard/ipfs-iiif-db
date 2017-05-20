@@ -46,7 +46,7 @@ function start () {
 
   })
 
-  annotationList = db.annotationList('id', original)
+  annotationList = db.annotationList(original)
 
   annotationList.room.on('peer joined', updateRoomPeers)
   annotationList.room.on('peer left', updateRoomPeers)
