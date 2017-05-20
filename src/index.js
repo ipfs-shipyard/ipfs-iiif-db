@@ -17,7 +17,7 @@ module.exports = (options) => {
     config: {
       Addresses: {
         Swarm: [
-          '/libp2p-webrtc-star/dns4/127.0.0.1:9090/ws'
+          '/libp2p-webrtc-star/dns4/star-signal.cloud.ipfs.team/wss'
         ]
       },
       Discovery: {
