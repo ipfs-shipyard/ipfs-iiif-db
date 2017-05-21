@@ -11,7 +11,7 @@ const EVENT_PREFIXES = {
 }
 
 module.exports = (ipfs) => {
-  let ready = false
+  let ready = ipfs.isOnline && ipfs.isOnline()
   ipfs.once('ready', () => {
     ready = true
   })
