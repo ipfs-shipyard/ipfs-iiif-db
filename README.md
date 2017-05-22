@@ -2,7 +2,20 @@
 
 > IIIF annotations JS client over IPFS
 
-# Instructions
+# CLI
+
+You can run a node from the command line, and it will keep track of all the recors inside a partition.
+
+```
+$ ipfs-iiif-db-track [partition]
+```
+
+`partition` defaults to `"iiif"`.
+
+The tracker will save all the changes into a local leveldb database.
+
+
+# JavaScript API
 
 ## Install
 
@@ -41,10 +54,11 @@ const db = DB([options])
 
 Arguments:
 * options (object):
-  * ipfs: a [js-ipfs options object](https://github.com/ipfs/js-ipfs#advanced-options-when-creating-an-ipfs-node)
-  * store (string, defaults to `"memory"`): a local store, represented by a string. Can either be:
+  * `ipfs`: a [js-ipfs options object](https://github.com/ipfs/js-ipfs#advanced-options-when-creating-an-ipfs-node)
+  * `store` (string, defaults to `"memory"`): a local store, represented by a string. Can either be:
     * `"indexeddb"`: for in-browser persistence
     * `"leveldb"`: for Node.js persistence
+  * `partition` (string, defaults to `iiif`): the partition this data belongs to. It's used to broadcast new record ids (so trackers can follow (and pin) the global partition state)
 
 # Annotation list
 

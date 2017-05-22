@@ -8,6 +8,8 @@ const EVENT_PREFIXES = {
   hits: 'hit'
 }
 
+exports.name = 'AnnotationList'
+
 exports.share = {
   annotationList: 'Map', // y.share.annotationList is of type Y.Map
   resources: 'Array',

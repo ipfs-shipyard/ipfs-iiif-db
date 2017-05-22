@@ -2,8 +2,14 @@
 
 const Y = require('yjs')
 const EventEmitter = require('events')
+const path = require('path')
+
+const PartitionAnnouncer = require('./partition-announcer')
 
 module.exports = (type, ipfs, options) => {
+  const partition = options.partition || 'iiif'
+  const partitionAnnouncer = PartitionAnnouncer(partition, ipfs)
+
   let ready = ipfs.isOnline && ipfs.isOnline()
   ipfs.once('ready', () => {
     ready = true
@@ -29,26 +35,30 @@ module.exports = (type, ipfs, options) => {
       throw new Error('id and original[@id] should not be different')
     }
 
+    const room = partition + ':' + id
     const roomEmitter = new EventEmitter()
     const wrapper = new type.wrapper(roomEmitter, original)
 
     const onceIpfsReady = () => {
       Y({
         db: {
-          name: options.store || 'memory'
+          name: options.store || 'memory',
+          dir: options.dir || path.join(__dirname, '..', 'db')
         },
         connector: {
           name: 'ipfs', // use the IPFS connector
           ipfs: ipfs,
-          room: original['@id'],
+          room: room,
           roomEmitter: roomEmitter
         },
         share: type.share
-      }).then(function (y) {
-
+      })
+      .then(function (y) {
         type.update(original, y.share)
-
         wrapper._start(y.share)
+        partitionAnnouncer.push(type.name, id)
+
+        wrapper.on('mutation', () => partitionAnnouncer.refresh(type.name, id))
       })
     }
 

@@ -1,7 +1,7 @@
 'use strict'
 global.setImmediate = require('timers').setImmediate;
 
-const DB = require('../../../')
+const DB = require('../../../src/browser')
 
 const $startButton = document.getElementById('start')
 const $stopButton = document.getElementById('stop')

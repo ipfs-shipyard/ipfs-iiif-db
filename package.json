@@ -7,6 +7,9 @@
     "lint": "aegir-lint",
     "build": "aegir-build"
   },
+  "bin": {
+    "ipfs-iiif-db-track": "src/cli/track.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/pgte/ipfs-iiif-DB.git"
@@ -25,6 +28,8 @@
   "homepage": "https://github.com/pgte/ipfs-iiif-DB#readme",
   "dependencies": {
     "async": "^2.4.0",
+    "backoff": "^2.5.0",
+    "colors": "^1.1.2",
     "ipfs": "git+https://git@github.com/ipfs/js-ipfs.git",
     "y-array": "^10.1.0",
     "y-indexeddb": "^8.1.9",
