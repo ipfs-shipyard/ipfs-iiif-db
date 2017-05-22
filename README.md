@@ -25,10 +25,10 @@ const DB = require('ipfs-iiif-db')
 
 ```html
 <!-- loading the minified version -->
-<script src="https://unpkg.com/ipfs-iiif-db/dist/index.min.js"></script>
+<script src="https://unpkg.com/ipfs-iiif-db/dist/browser.min.js"></script>
 
 <!-- loading the human-readable (not minified) version -->
-<script src="https://unpkg.com/ipfs-iiif-db/dist/index.js"></script>
+<script src="https://unpkg.com/ipfs-iiif-db/dist/browser.js"></script>
 ```
 
 Now you can access this library using the `IpfsIiifDb` on the global namespace. (In this case, replace `DB` on the examples below with `IpfsIiifDb`).

@@ -1,8 +1,8 @@
 {
   "name": "ipfs-iiif-db",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "IIIF Annotations DB over IPFS",
-  "main": "src/index.js",
+  "main": "src/node.js",
   "scripts": {
     "lint": "aegir-lint",
     "build": "aegir-build"
