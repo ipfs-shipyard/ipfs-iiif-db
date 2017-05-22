@@ -33,7 +33,7 @@ let peerInfo
  */
 
 function start () {
-  db = DB()
+  db = DB({ store: 'indexeddb' })
 
   db.ipfs.once('ready', () => {
     db.ipfs.id((err, _peerInfo) => {
@@ -54,6 +54,8 @@ function start () {
   annotationList.on('mutation', (event) => {
     updateValue()
   })
+
+  annotationList.once('started', updateValue)
 
   updateView('starting')
   updateValue()

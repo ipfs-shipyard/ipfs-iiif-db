@@ -1,7 +1,5 @@
 'use strict'
 
-const Y = require('yjs')
-const EventEmitter = require('events')
 const Wrapper = require('./wrapper')
 
 const ARRAY_KEYS = ['resources', 'hits']
@@ -10,86 +8,33 @@ const EVENT_PREFIXES = {
   hits: 'hit'
 }
 
-module.exports = (ipfs) => {
-  let ready = ipfs.isOnline && ipfs.isOnline()
-  ipfs.once('ready', () => {
-    ready = true
-  })
-
-  return (id, original) => {
-    if (typeof id === 'object') {
-      original = id
-      id = original['@id']
-    } else if (!original) {
-      original = {}
-    }
-
-    if (!id) {
-      throw new Error('annotation list needs an id or @id property')
-    }
-
-    if (!original['@id']) {
-      original['@id'] = id
-    }
-
-    if (id !== original['@id']) {
-      throw new Error('id and original[@id] should not be different')
-    }
-
-    const roomEmitter = new EventEmitter()
-    const wrapper = new AnnotationListWrapper(roomEmitter, original)
-
-
-    const onceIpfsReady = () => {
-      Y({
-        db: {
-          name: 'memory'
-        },
-        connector: {
-          name: 'ipfs', // use the IPFS connector
-          ipfs: ipfs,
-          room: id,
-          roomEmitter: roomEmitter
-        },
-        share: {
-          annotationList: 'Map', // y.share.annotationList is of type Y.Map
-          resources: 'Array',
-          hits: 'Array'
-        }
-      }).then(function (y) {
-        // resources
-        const originalResources = original.resources || []
-        originalResources.forEach((resource) => {
-          y.share.resources.push([resource])
-        })
-
-        // hits
-        const originalHits = original.hits || []
-        originalHits.forEach((hit) => {
-          y.share.hits.push([hit])
-        })
-
-        Object.keys(original).forEach((key) => {
-          if (original.hasOwnProperty(key) && ARRAY_KEYS.indexOf(key) < 0) {
-            y.share.annotationList.set(key, original[key])
-          }
-        })
-
-        wrapper._start(y.share)
-      })
-    }
-
-    if (ready) {
-      onceIpfsReady()
-    } else {
-      ipfs.once('ready', onceIpfsReady)
-    }
-
-    return wrapper
-  }
+exports.share = {
+  annotationList: 'Map', // y.share.annotationList is of type Y.Map
+  resources: 'Array',
+  hits: 'Array'
 }
 
-class AnnotationListWrapper extends Wrapper {
+exports.update = (original, share) => {
+  // resources
+  const originalResources = original.resources || []
+  originalResources.forEach((resource) => {
+    share.resources.push([resource])
+  })
+
+  // hits
+  const originalHits = original.hits || []
+  originalHits.forEach((hit) => {
+    share.hits.push([hit])
+  })
+
+  Object.keys(original).forEach((key) => {
+    if (original.hasOwnProperty(key) && ARRAY_KEYS.indexOf(key) < 0) {
+      share.annotationList.set(key, original[key])
+    }
+  })
+}
+
+exports.wrapper = class AnnotationListWrapper extends Wrapper {
 
   constructor (roomEmitter, originalValue) {
     super(roomEmitter)

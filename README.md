@@ -42,6 +42,9 @@ const db = DB([options])
 Arguments:
 * options (object):
   * ipfs: a [js-ipfs options object](https://github.com/ipfs/js-ipfs#advanced-options-when-creating-an-ipfs-node)
+  * store (string, defaults to `"memory"`): a local store, represented by a string. Can either be:
+    * `"indexeddb"`: for in-browser persistence
+    * `"leveldb"`: for Node.js persistence
 
 # Annotation list
 
@@ -178,6 +181,10 @@ console.log('current annotation list is: %j', annotationList.toJSON())
 
 
 ## AnnotationList Events
+
+### "started" (event)
+
+Once the AnnotationList CRDT has finished the bootstrap process. You can take this opportunity to do an initial render of the list.
 
 ### "mutation" (event)
 

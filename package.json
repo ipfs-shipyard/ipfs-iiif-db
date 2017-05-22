@@ -14,7 +14,8 @@
   "keywords": [
     "ipfs",
     "iiif",
-    "DB"
+    "DB",
+    "CRDT"
   ],
   "author": "Pedro Teixeira <i@pgte.me>",
   "license": "MIT",
@@ -26,7 +27,9 @@
     "async": "^2.4.0",
     "ipfs": "git+https://git@github.com/ipfs/js-ipfs.git",
     "y-array": "^10.1.0",
+    "y-indexeddb": "^8.1.9",
     "y-ipfs-connector": "*",
+    "y-leveldb": "0.0.1",
     "y-map": "^10.1.0",
     "y-memory": "^8.0.8",
     "yjs": "^12.3.0"
