@@ -1,6 +1,6 @@
 {
   "name": "ipfs-iiif-db",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "IIIF Annotations DB over IPFS",
   "main": "src/node.js",
   "scripts": {
