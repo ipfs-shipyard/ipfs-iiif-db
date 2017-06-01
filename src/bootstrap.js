@@ -37,7 +37,7 @@ module.exports = (type, ipfs, options) => {
 
     const room = partition + ':' + id
     const roomEmitter = new EventEmitter()
-    const wrapper = new type.wrapper(roomEmitter, original)
+    const wrapper = new (type.wrapper)(roomEmitter, original)
 
     const onceIpfsReady = () => {
       Y({

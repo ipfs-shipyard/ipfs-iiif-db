@@ -47,31 +47,47 @@ exports.wrapper = class AnnotationListWrapper extends Wrapper {
     this._originalValue = undefined
     this._share = share
 
-    share.annotationList.observe((event) => {
-      const ev = {
-        type: event.type,
-        name: event.name,
-        value: event.value,
-        oldValue: event.oldValue
-      }
-      this.emit(event.type, ev)
-      this.emit('mutation', ev)
-    })
+    // share.annotationList.observe((event) => {
+    //   const ev = {
+    //     type: event.type,
+    //     name: event.name,
+    //     value: event.value,
+    //     oldValue: event.oldValue
+    //   }
+    //   this.emit(event.type, ev)
+    //   this.emit('mutation', ev)
+    // })
 
     ARRAY_KEYS.forEach((key) => {
       const eventPrefix = eventPrefixFor(key)
       share[key].observe((event) => {
         let eventType = event.type === 'insert' ?  eventPrefix + ' inserted' : eventPrefix + ' deleted';
-        (event.values || event.oldValues).forEach((value) => {
+
+        console.log('event type:', eventType)
+
+        if (!(event.values || event.oldValues || []).length) {
           const ev = {
+            key: key,
             type: eventType,
-            index: event.index,
-            value: value
+            index: event.index
           }
 
-          this.emit(eventType, ev)
-          this.emit('mutation', ev)
-        })
+          this.emit('mutation', ev);
+          this.emit(eventType, ev);
+        } else {
+          (event.values || event.oldValues).forEach((value) => {
+            const ev = {
+              key: key,
+              type: eventType,
+              index: event.index,
+              value: value
+            }
+
+            this.emit(eventType, ev);
+            this.emit('mutation', ev);
+          })
+
+        }
       })
     })
 

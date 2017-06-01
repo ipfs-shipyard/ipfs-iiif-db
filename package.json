@@ -30,7 +30,7 @@
     "async": "^2.4.0",
     "backoff": "^2.5.0",
     "colors": "^1.1.2",
-    "ipfs": "git+https://git@github.com/ipfs/js-ipfs.git",
+    "ipfs": "^0.24.1",
     "y-array": "^10.1.0",
     "y-indexeddb": "^8.1.9",
     "y-ipfs-connector": "*",
