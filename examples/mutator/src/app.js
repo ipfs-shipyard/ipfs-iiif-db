@@ -21,7 +21,7 @@ const $value = document.getElementById('value')
 const $addButton = document.getElementById('add')
 const $removeButton = document.getElementById('remove')
 
-const original = 'http://wellcomelibrary.org/iiif/b18035723/manifest' // require('./samples/original')
+const original = 'http://wellcomelibrary.org/iiif/b18035723/manifest#ipfs-iiif-db-example' // require('./samples/original')
 const annotations = require('./samples/annotations')
 
 let db
