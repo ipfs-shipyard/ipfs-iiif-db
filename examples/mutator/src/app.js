@@ -33,7 +33,7 @@ let peerInfo
  */
 
 function start () {
-  db = DB({ store: 'memory' })
+  db = DB()
 
   db.ipfs.once('ready', () => {
     db.ipfs.id((err, _peerInfo) => {

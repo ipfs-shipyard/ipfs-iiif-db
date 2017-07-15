@@ -1,9 +1,10 @@
 'use strict'
 
 const IPFS = require('ipfs')
+const EventEmitter = require('events')
+const Y = require('Y')
 
-const bootstrap = require('./bootstrap')
-const annotationList = require('./annotation-list')
+const creating = require('./creating')
 
 module.exports = (options) => {
   const ipfsOptions = Object.assign({
@@ -26,11 +27,21 @@ module.exports = (options) => {
   }, options && options.ipfs)
 
   const ipfs = new IPFS(ipfsOptions)
-
-  return {
-    ipfs: ipfs,
-    annotationList : bootstrap(annotationList, ipfs, options || {})
+  const ee = new EventEmitter()
+  const yDefaultOptions = {
+    db: options && options.store || 'memory',
+    connector: {
+      name: 'ipfs-connector',
+      ipfs: ipfs
+    }
   }
+
+  return Object.assign(ee, {
+    Y: Y,
+    yDefaultOptions: yDefaultOptions,
+    ipfs: ipfs,
+    annotationList: creating.call(ee, 'AnnotationList')
+  })
 }
 
 function repoPath () {
